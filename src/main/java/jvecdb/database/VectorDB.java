@@ -10,9 +10,13 @@
 
 package jvecdb.database;
 
+import javafx.geometry.Point3D;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape3D;
+import jvecdb.JVecDB;
 import jvecdb.database.db.DataBase;
 import jvecdb.database.vectorize.Vectorizer;
-import jvecdb.rendering.vectorspace.VecShape;
+import jvecdb.rendering.vectorspace.vectorshapes.VecBox;
 import jvecdb.utils.datastructures.JVec;
 
 import java.io.IOException;
@@ -31,10 +35,10 @@ public class VectorDB {
         return true;
     }
 
-    public VecShape addStringToDB(String inputString) {
-        JVec temp = vectorizer.StringSimple(inputString);
-        JVecDataBase.add(temp);
-        return
+    public Shape3D addStringToDB(String inputString) {
+        JVec vec = vectorizer.StringSimple(inputString);
+        JVecDataBase.add(vec);
+        return getVectorSpaceShape(vec);
     }
 
     public ArrayList<JVec> getVectorDataBase() {
@@ -42,8 +46,15 @@ public class VectorDB {
     }
 
 
-
-
-
-
+    private Shape3D getVectorSpaceShape(JVec vec) {
+        switch (JVecDB.ACTIVE_SHAPE) {
+            case BOX -> {
+                System.out.println(vec);
+                return new VecBox(new Point3D(5, 5, 5), new Point3D(10, 10, 10), Color.BLUE);
+            }
+            case SPHERE -> {
+            }
+        }
+        return null;
+    }
 }

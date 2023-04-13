@@ -24,7 +24,8 @@ public class VectorSpace {
         root.getChildren().add(box);
         shapes.add(box);
     }
-    public void addBox(VecShape shape) {
+
+    public void addBox(Shape3D shape) {
         root.getChildren().add(shape);
         shapes.add(shape);
     }

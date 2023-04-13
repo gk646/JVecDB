@@ -10,6 +10,7 @@
 package jvecdb.database.vectorize;
 
 import jvecdb.utils.datastructures.JVec;
+import jvecdb.utils.errorhandling.Alerts;
 import org.nd4j.common.io.ClassPathResource;
 
 import java.io.IOException;
@@ -28,16 +29,17 @@ public class Vectorizer {
         //SentenceIterator iter = new BasicLineIterator(filePath);
     }
 
-
     public JVec StringSimple(String s) {
         int letterVal = 0;
         for (var letter : s.toCharArray()) {
+            if (Character.isWhitespace(letter)) continue;
+
             if (Character.isUpperCase(letter)) {
-                letterVal = letter - 'A' + 1;
+                letterVal += letter - 'A' + 1;
             } else if (Character.isLowerCase(letter)) {
-                letterVal = letter - 'a' + 1;
+                letterVal += letter - 'a' + 1;
             } else {
-                throw new IllegalArgumentException("Invalid input. The input must be an uppercase or lowercase letter.");
+                Alerts.displayErrorMessage("Invalid input. The input must be alphabetical characters or whitespace (ignored).");
             }
         }
         return new JVec(new float[]{s.length(), letterVal});

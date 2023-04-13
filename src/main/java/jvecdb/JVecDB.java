@@ -13,7 +13,8 @@ package jvecdb;
 import javafx.stage.Stage;
 import jvecdb.database.VectorDB;
 import jvecdb.rendering.VectorSpaceFX;
-import jvecdb.utils.DataType;
+import jvecdb.utils.enums.DataType;
+import jvecdb.utils.enums.VectorShape;
 import jvecdb.utils.errorhandling.Alerts;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 
@@ -23,8 +24,8 @@ public class JVecDB {
     public static int WIDTH = 1280, HEIGHT = 960;
     static VectorSpaceFX vectorSpace = new VectorSpaceFX();
     static VectorDB vectorDB = new VectorDB();
-    public static DataType dataType = DataType.STRING;
-
+    public static DataType ACTIVE_DATA_TYPE = DataType.STRING;
+    public static VectorShape ACTIVE_SHAPE = VectorShape.BOX;
 
     public JVecDB(Stage stage) {
         try {
@@ -41,10 +42,9 @@ public class JVecDB {
 
 
     public static <T> void addDBEntry(T entry) {
-        switch (dataType) {
+        switch (ACTIVE_DATA_TYPE) {
             case STRING -> {
                 if (vectorSpace.addVisualEntry(vectorDB.addStringToDB((String) entry))) {
-
                 } else {
                     Alerts.displayErrorMessage("Can't add entry to database!");
                 }

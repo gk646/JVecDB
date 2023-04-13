@@ -20,12 +20,12 @@ import javafx.scene.SubScene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape3D;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import jvecdb.JVecDB;
 import jvecdb.rendering.ui.BasicUI;
-import jvecdb.rendering.vectorspace.VecShape;
 import jvecdb.rendering.vectorspace.VectorSpace;
 import jvecdb.utils.datastructures.JVec;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
@@ -197,7 +197,7 @@ public class VectorSpaceFX {
         });
     }
 
-    public boolean addVisualEntry(VecShape shape) {
+    public boolean addVisualEntry(Shape3D shape) {
         vectorSpace.addBox(shape);
         return true;
     }
