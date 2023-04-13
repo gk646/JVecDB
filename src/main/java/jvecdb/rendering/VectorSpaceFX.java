@@ -117,7 +117,7 @@ public class VectorSpaceFX {
         camera.setNearClip(0.1);
         camera.setFarClip(100000);
         camera.setTranslateZ(-150);
-        camera.setFieldOfView(100);
+        camera.setFieldOfView(42);
         camera.setVerticalFieldOfView(true);
         camera.getTransforms().addAll(translate);
         subScene.setCamera(camera);
@@ -130,18 +130,35 @@ public class VectorSpaceFX {
         });
         mainScene.setOnMouseDragged(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
-                double dx = event.getSceneX() - lastX;
-                double dy = event.getSceneY() - lastY;
-                rotateX.setAngle(rotateX.getAngle() - dy);
-                rotateY.setAngle(rotateY.getAngle() + dx);
-                camera.getTransforms().clear();
-                camera.getTransforms().addAll(translate, rotateX, rotateY);
+                double dx = lastX - event.getSceneX();
+                double dy = lastY - event.getSceneY();
+
+                double newRotateY = (rotateY.getAngle() + dx) % 360;
+                double newRotateX = rotateX.getAngle() - dy;
+                newRotateX = Math.max(Math.min(newRotateX, 45), -45);
+
+                rotateX.setAngle(newRotateX);
+                rotateY.setAngle(newRotateY);
+
+                double radianX = Math.toRadians(newRotateX);
+                double radianY = Math.toRadians(newRotateY);
+
+                double xDirection = -Math.sin(radianY) * Math.cos(radianX);
+                double yDirection = -Math.sin(radianX);
+                double zDirection = Math.cos(radianY) * Math.cos(radianX);
+
+                Point3D direction = new Point3D(xDirection, yDirection, zDirection);
+                Point3D up = new Point3D(0, 1, 0);
+                Point3D right = direction.crossProduct(up);
+
+
+                camera.getTransforms().setAll(new Rotate(newRotateX, right), new Rotate(-newRotateY, up));
             } else if (event.getButton() == MouseButton.SECONDARY) {
                 double dx = lastX - event.getSceneX();
                 double dy = lastY - event.getSceneY();
 
-                azimuth += dx * 0.005;
-                elevation += dy * 0.005;
+                azimuth += dx * 0.01;
+                elevation += dy * 0.01;
 
                 double radius = 50;
                 double centerX = 0;
@@ -154,9 +171,8 @@ public class VectorSpaceFX {
 
                 camera.setTranslateX(x);
                 camera.setTranslateY(y);
-                camera.setTranslateZ(z);
+                camera.setTranslateZ(z-radius*4);
 
-                //camera.lookAt(centerX, centerY, centerZ, new Point3D(0, 1, 0));
 
             }
             lastX = event.getSceneX();
@@ -164,37 +180,40 @@ public class VectorSpaceFX {
         });
         mainScene.setOnKeyPressed(event -> {
             double cameraYaw = Math.toRadians(rotateY.getAngle());
-            double dx, dz;
-
+            double cameraPitch = Math.toRadians(rotateX.getAngle());
+            double dx, dy, dz;
             switch (event.getCode()) {
-                case S -> {
-                    dx = moveAmount * Math.sin(cameraYaw);
-                    dz = -moveAmount * Math.cos(cameraYaw);
-                    translate.setX(translate.getX() - dx);
-                    translate.setZ(translate.getZ() + dz);
-                }
                 case W -> {
-                    dx = moveAmount * Math.sin(cameraYaw);
-                    dz = -moveAmount * Math.cos(cameraYaw);
-                    translate.setX(translate.getX() + dx);
-                    translate.setZ(translate.getZ() - dz);
+                    dx = moveAmount * Math.sin(cameraYaw) * Math.cos(cameraPitch);
+                    dy = moveAmount * Math.sin(cameraPitch);
+                    dz = -moveAmount * Math.cos(cameraYaw) * Math.cos(cameraPitch);
+                    camera.setTranslateX(camera.getTranslateX() - dx);
+                    camera.setTranslateY(camera.getTranslateY() - dy);
+                    camera.setTranslateZ(camera.getTranslateZ() + dz);
                 }
-                case D -> {
-                    dx = moveAmount * Math.sin(cameraYaw - Math.PI / 2);
-                    dz = -moveAmount * Math.cos(cameraYaw - Math.PI / 2);
-                    translate.setX(translate.getX() - dx);
-                    translate.setZ(translate.getZ() + dz);
+                case S -> {
+                    dx = moveAmount * Math.sin(cameraYaw) * Math.cos(cameraPitch);
+                    dy = moveAmount * Math.sin(cameraPitch);
+                    dz = -moveAmount * Math.cos(cameraYaw) * Math.cos(cameraPitch);
+                    camera.setTranslateX(camera.getTranslateX() + dx);
+                    camera.setTranslateY(camera.getTranslateY() + dy);
+                    camera.setTranslateZ(camera.getTranslateZ() - dz);
                 }
                 case A -> {
+                    dx = moveAmount * Math.sin(cameraYaw - Math.PI / 2);
+                    dz = -moveAmount * Math.cos(cameraYaw - Math.PI / 2);
+                    camera.setTranslateX(camera.getTranslateX() - dx);
+                    camera.setTranslateZ(camera.getTranslateZ() + dz);
+                }
+                case D -> {
                     dx = moveAmount * Math.sin(cameraYaw + Math.PI / 2);
                     dz = -moveAmount * Math.cos(cameraYaw + Math.PI / 2);
-                    translate.setX(translate.getX() - dx);
-                    translate.setZ(translate.getZ() + dz);
+                    camera.setTranslateX(camera.getTranslateX() - dx);
+                    camera.setTranslateZ(camera.getTranslateZ() + dz);
                 }
             }
-            camera.getTransforms().clear();
-            camera.getTransforms().addAll(translate, rotateX, rotateY);
         });
+
     }
 
     public boolean addVisualEntry(Shape3D shape) {

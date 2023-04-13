@@ -38,6 +38,7 @@ public class VectorDB {
     public Shape3D addStringToDB(String inputString) {
         JVec vec = vectorizer.StringSimple(inputString);
         JVecDataBase.add(vec);
+        System.out.println(vec);
         return getVectorSpaceShape(vec);
     }
 
@@ -49,8 +50,7 @@ public class VectorDB {
     private Shape3D getVectorSpaceShape(JVec vec) {
         switch (JVecDB.ACTIVE_SHAPE) {
             case BOX -> {
-                System.out.println(vec);
-                return new VecBox(new Point3D(5, 5, 5), new Point3D(10, 10, 10), Color.BLUE);
+                return new VecBox(new Point3D(5, 5, 5), new Point3D(vec.vector[0], vec.vector[1], vec.vector[2]), Color.BLUE);
             }
             case SPHERE -> {
             }
