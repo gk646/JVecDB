@@ -12,6 +12,7 @@ package jvecdb.rendering;
 
 
 import javafx.geometry.Point3D;
+import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
@@ -29,6 +30,8 @@ import jvecdb.rendering.ui.BasicUI;
 import jvecdb.rendering.vectorspace.VectorSpace;
 import jvecdb.utils.datastructures.JVec;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
+
+import java.awt.geom.Point2D;
 
 public class VectorSpaceFX {
 
@@ -64,6 +67,7 @@ public class VectorSpaceFX {
     Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
     Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
     Translate translate = new Translate();
+    int radius = 50;
     double lastX, lastY, moveAmount = 10, azimuth, elevation;
     int zoomLevel;
 
@@ -154,29 +158,59 @@ public class VectorSpaceFX {
 
                 camera.getTransforms().setAll(new Rotate(newRotateX, right), new Rotate(-newRotateY, up));
             } else if (event.getButton() == MouseButton.SECONDARY) {
-                double dx = lastX - event.getSceneX();
-                double dy = lastY - event.getSceneY();
+                {
+                    double dx = lastX - event.getSceneX();
+                    double dy = lastY - event.getSceneY();
 
-                azimuth += dx * 0.01;
-                elevation += dy * 0.01;
-
-                double radius = 50;
-                double centerX = 0;
-                double centerY = 0;
-                double centerZ = 0;
-
-                double x = centerX + radius * Math.cos(elevation) * Math.sin(azimuth);
-                double y = centerY + radius * Math.sin(elevation);
-                double z = centerZ + radius * Math.cos(elevation) * Math.cos(azimuth);
-
-                camera.setTranslateX(x);
-                camera.setTranslateY(y);
-                camera.setTranslateZ(z-radius*4);
+                    azimuth += dx * 0.01;
+                    elevation += dy * 0.01;
 
 
+                    double centerX = 0;
+                    double centerY = 0;
+                    double centerZ = 0;
+
+                    double x = centerX + radius * Math.cos(elevation) * Math.sin(azimuth);
+                    double y = centerY + radius * Math.sin(elevation);
+                    double z = centerZ + radius * Math.cos(elevation) * Math.cos(azimuth);
+
+                    camera.setTranslateX(x);
+                    camera.setTranslateY(y);
+                    camera.setTranslateZ(z);
+                }
+
+                double cameraX = camera.getTranslateX();
+                double cameraY = camera.getTranslateY();
+                double cameraZ = camera.getTranslateZ();
+
+
+                double pitch;
+                if (cameraY > 0) {
+                    pitch = Math.toDegrees(Math.asin(-cameraZ / new Point2D.Double(cameraZ, cameraY).distance(new Point2D.Double(0, 0))));
+                    pitch = 90 - pitch;
+                } else {
+                    pitch = Math.toDegrees(Math.asin(-cameraZ / new Point2D.Double(cameraZ, cameraY).distance(new Point2D.Double(0, 0))));
+                    pitch = -90 + pitch;
+                }
+
+                double yaw;
+                if (cameraX > 0) {
+                    yaw = Math.toDegrees(Math.asin(-cameraZ / new Point2D.Double(cameraX, cameraZ).distance(new Point2D.Double(0, 0))));
+                    yaw = 90 - yaw;
+                } else {
+                    yaw = Math.toDegrees(Math.asin(-cameraZ / new Point2D.Double(cameraX, cameraZ).distance(new Point2D.Double(0, 0))));
+                    yaw = -90 + yaw;
+                }
+
+                rotateX.setAngle(pitch);
+                rotateY.setAngle(-yaw);
+                camera.getTransforms().clear();
+                camera.getTransforms().addAll(rotateY, rotateX);
             }
             lastX = event.getSceneX();
             lastY = event.getSceneY();
+            System.out.println("Rotation: " + rotateX.getAngle() + " " + rotateY.getAngle() + " " + rotateZ.getAngle());
+            System.out.println("Translation: " + camera.getTranslateX() + " " + camera.getTranslateY() + " " + camera.getTranslateZ());
         });
         mainScene.setOnKeyPressed(event -> {
             double cameraYaw = Math.toRadians(rotateY.getAngle());
@@ -184,6 +218,7 @@ public class VectorSpaceFX {
             double dx, dy, dz;
             switch (event.getCode()) {
                 case W -> {
+                    radius++;
                     dx = moveAmount * Math.sin(cameraYaw) * Math.cos(cameraPitch);
                     dy = moveAmount * Math.sin(cameraPitch);
                     dz = -moveAmount * Math.cos(cameraYaw) * Math.cos(cameraPitch);
@@ -192,6 +227,7 @@ public class VectorSpaceFX {
                     camera.setTranslateZ(camera.getTranslateZ() + dz);
                 }
                 case S -> {
+                    radius--;
                     dx = moveAmount * Math.sin(cameraYaw) * Math.cos(cameraPitch);
                     dy = moveAmount * Math.sin(cameraPitch);
                     dz = -moveAmount * Math.cos(cameraYaw) * Math.cos(cameraPitch);
@@ -213,7 +249,22 @@ public class VectorSpaceFX {
                 }
             }
         });
+    }
 
+    private void lookAt(Camera camera, Point3D target, Point3D up) {
+        Point3D zAxis = new Point3D(
+                camera.getTranslateX() - target.getX(),
+                camera.getTranslateY() - target.getY(),
+                camera.getTranslateZ() - target.getZ()
+        ).normalize();
+        Point3D xAxis = up.crossProduct(zAxis).normalize();
+        Point3D yAxis = zAxis.crossProduct(xAxis);
+
+        Rotate rotateX = new Rotate(-Math.toDegrees(Math.atan2(yAxis.getZ(), yAxis.getY())), Rotate.X_AXIS);
+        Rotate rotateY = new Rotate(Math.toDegrees(Math.atan2(-zAxis.getZ(), zAxis.getX())), Rotate.Y_AXIS);
+        Rotate rotateZ = new Rotate(-Math.toDegrees(Math.atan2(xAxis.getY(), xAxis.getX())), Rotate.Z_AXIS);
+
+        camera.getTransforms().setAll(rotateX, rotateY, rotateZ);
     }
 
     public boolean addVisualEntry(Shape3D shape) {
