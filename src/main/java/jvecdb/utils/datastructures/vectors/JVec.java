@@ -1,4 +1,6 @@
-package jvecdb.utils.datastructures;
+package jvecdb.utils.datastructures.vectors;
+
+import org.apache.commons.math3.exception.MathArithmeticException;
 
 import java.util.Arrays;
 
@@ -42,5 +44,23 @@ public class JVec {
 
     public static JVec zero() {
         return new JVec(new float[]{});
+    }
+
+    public static float dotProduct(JVec vec1, JVec vec2) {
+        if (vec1.getLength() != vec2.getLength()) throw new MathArithmeticException();
+        int len = vec1.getLength();
+        float result = 0;
+        for (int i = 0; i < len; i++) {
+            result += vec1.vector[i] * vec2.vector[i];
+        }
+        return result;
+    }
+
+    public double magnitude() {
+        float result = 0;
+        for (var v : vector) {
+            result += v * v;
+        }
+        return Math.sqrt(result);
     }
 }

@@ -17,6 +17,7 @@ public class DataBase {
 
     DataBaseImport dbImport;
     DataBaseExport dbExport;
+    int scaleFactor = 5;
 
     public DataBase() {
         getDBFile();
@@ -25,6 +26,10 @@ public class DataBase {
 
     private void getDBFile() {
 
+    }
+
+    public int getScaleFactor() {
+        return scaleFactor;
     }
 
     // public <T> T getOrigin(){

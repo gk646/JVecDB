@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.RandomAccess;
 
-public class ArrayListJVec<T> implements RandomAccess {
+public final class ArrayListJVec<T> implements RandomAccess {
     private int size = 0;
     private T[] elements;
 

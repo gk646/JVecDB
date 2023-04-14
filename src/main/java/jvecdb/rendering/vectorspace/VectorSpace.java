@@ -5,7 +5,7 @@ import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape3D;
 import jvecdb.rendering.vectorspace.vectorshapes.VecBox;
-import jvecdb.utils.datastructures.JVec;
+import jvecdb.utils.datastructures.vectors.JVec;
 
 import java.util.ArrayList;
 

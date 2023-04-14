@@ -4,7 +4,7 @@ import javafx.geometry.Point3D;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
-import jvecdb.utils.datastructures.JVec;
+import jvecdb.utils.datastructures.vectors.JVec;
 
 public class VecBox extends Box {
 

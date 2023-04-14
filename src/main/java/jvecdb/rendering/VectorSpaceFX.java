@@ -28,7 +28,7 @@ import javafx.stage.Stage;
 import jvecdb.JVecDB;
 import jvecdb.rendering.ui.BasicUI;
 import jvecdb.rendering.vectorspace.VectorSpace;
-import jvecdb.utils.datastructures.JVec;
+import jvecdb.utils.datastructures.vectors.JVec;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 
 import java.awt.geom.Point2D;
@@ -67,7 +67,7 @@ public class VectorSpaceFX {
     Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
     Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
     Translate translate = new Translate();
-    int radius = 50;
+    int radius = 150;
     double lastX, lastY, moveAmount = 10, azimuth, elevation;
     int zoomLevel;
 
@@ -203,7 +203,7 @@ public class VectorSpaceFX {
                 }
 
                 rotateX.setAngle(pitch);
-                rotateY.setAngle(-yaw);
+                //rotateY.setAngle(-yaw);
                 camera.getTransforms().clear();
                 camera.getTransforms().addAll(rotateY, rotateX);
             }

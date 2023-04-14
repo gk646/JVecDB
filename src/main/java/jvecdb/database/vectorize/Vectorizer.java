@@ -9,7 +9,8 @@
  */
 package jvecdb.database.vectorize;
 
-import jvecdb.utils.datastructures.JVec;
+import jvecdb.utils.datastructures.vectors.JVec;
+import jvecdb.utils.datastructures.vectors.JVec_STR;
 import jvecdb.utils.errorhandling.Alerts;
 import org.nd4j.common.io.ClassPathResource;
 
@@ -31,34 +32,18 @@ public class Vectorizer {
 
     public JVec StringSimple(String s) {
         float letterVal = 0;
-        float letterVar = 0;
         int len = s.length();
-        int vowels = 0;
-        int consonants = 0;
-
         for (var letter : s.toCharArray()) {
             if (Character.isWhitespace(letter)) continue;
 
-            if (Character.isUpperCase(letter) || Character.isLowerCase(letter)) {
-                char lowerCaseLetter = Character.toLowerCase(letter);
-
-                if ("aeiou".indexOf(lowerCaseLetter) >= 0) {
-                    vowels++;
-                } else {
-                    consonants++;
-                }
-
-                int letterValue = lowerCaseLetter - 'a' + 1;
-                letterVal += letterValue;
-                letterVar += letterValue * letterValue;
+            if (Character.isUpperCase(letter)) {
+                letterVal += letter - 'A' + 1;
+            } else if (Character.isLowerCase(letter)) {
+                letterVal += letter - 'a' + 1;
             } else {
                 Alerts.displayErrorMessage("Invalid input. The input must be alphabetical characters or whitespace (ignored).");
             }
         }
-
-        float avgLetterVal = letterVal / len;
-        float variance = (letterVar / len) - (avgLetterVal * avgLetterVal);
-        float vowelConsonantRatio = (float) vowels / (float) consonants;
-        return new JVec(new float[]{len * 13 * vowelConsonantRatio, letterVal * variance, letterVal / len});
+        return new JVec_STR(new float[]{len, letterVal});
     }
 }
