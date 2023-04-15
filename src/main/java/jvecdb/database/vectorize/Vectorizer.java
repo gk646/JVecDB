@@ -44,6 +44,6 @@ public class Vectorizer {
                 Alerts.displayErrorMessage("Invalid input. The input must be alphabetical characters or whitespace (ignored).");
             }
         }
-        return new JVec_STR(new float[]{len, letterVal});
+        return new JVec_STR(s, new float[]{len, letterVal});
     }
 }

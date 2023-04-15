@@ -112,7 +112,7 @@ public class VectorSpaceFX {
     }
 
     private void initOrigin() {
-        vectorSpace.addBox(new Point3D(5, 5, 5), new Point3D(0, 0, 0), Color.RED, JVec.zero());
+        vectorSpace.addBox(new Point3D(5, 5, 5), new Point3D(0, 0, 0), Color.RED, JVec.ZERO());
     }
 
     private void initCamera() {

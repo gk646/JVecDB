@@ -12,11 +12,11 @@ package jvecdb.database.db;
 
 import jvecdb.database.db.io.DataBaseExport;
 import jvecdb.database.db.io.DataBaseImport;
+import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 
 public class DataBase {
-
-    DataBaseImport dbImport;
-    DataBaseExport dbExport;
+    DataBaseImport dbImport = new DataBaseImport();
+    DataBaseExport dbExport = new DataBaseExport();
     int scaleFactor = 5;
 
     public DataBase() {
@@ -30,6 +30,13 @@ public class DataBase {
 
     public int getScaleFactor() {
         return scaleFactor;
+    }
+
+
+    public void makeExportFolder() {
+        if (!dbExport.testForExportFolders()) {
+            throw new StartupFailure("Couldn't create export folders!");
+        }
     }
 
     // public <T> T getOrigin(){

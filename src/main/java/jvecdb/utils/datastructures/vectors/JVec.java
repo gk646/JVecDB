@@ -5,10 +5,14 @@ import org.apache.commons.math3.exception.MathArithmeticException;
 import java.util.Arrays;
 
 public class JVec {
-    public final float[] vector;
+    protected final float[] vector;
 
     public JVec(float[] vec) {
         this.vector = vec;
+    }
+
+    public float[] getVector() {
+        return vector;
     }
 
 
@@ -42,7 +46,7 @@ public class JVec {
         return hash;
     }
 
-    public static JVec zero() {
+    public static JVec ZERO() {
         return new JVec(new float[]{});
     }
 

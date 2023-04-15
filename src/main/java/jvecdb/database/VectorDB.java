@@ -32,6 +32,7 @@ public class VectorDB {
 
 
     public boolean init() throws IOException {
+        dataBase.makeExportFolder();
         dataBase = new DataBase();
         vectorizer = new Vectorizer();
 
