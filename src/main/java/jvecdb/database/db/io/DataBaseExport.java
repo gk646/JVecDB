@@ -26,7 +26,7 @@ public final class DataBaseExport {
     HashMap<Integer, String[]> metaData;
 
     public DataBaseExport() {
-        metaData = new HashMap<Integer, String[]>();
+        metaData = new HashMap<>();
     }
 
 
@@ -111,7 +111,7 @@ public final class DataBaseExport {
         metaData.clear();
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        Point3D position = JVecDB.getVectorSpace3DPosition();
+        Point3D position = JVecDB.vectorSpaceFX.getPosition();
         int index = 0;
         metaData.put(index++, new String[]{"time", now.format(formatter)});
         metaData.put(index++, new String[]{"jvecdbversion", JVecDB.VERSION});

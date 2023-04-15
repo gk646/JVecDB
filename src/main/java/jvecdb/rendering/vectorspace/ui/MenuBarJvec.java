@@ -1,4 +1,4 @@
-package jvecdb.rendering.ui;
+package jvecdb.rendering.vectorspace.ui;
 
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;

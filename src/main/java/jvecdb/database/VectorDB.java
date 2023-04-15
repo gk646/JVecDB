@@ -26,7 +26,7 @@ import jvecdb.utils.errorhandling.Alerts;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public final class VectorDB <T extends JVec>{
+public final class VectorDB<T extends JVec> {
     public static boolean IMPORTED_FLAG = false;
     DataBase dataBase;
     Vectorizer vectorizer;
@@ -40,10 +40,10 @@ public final class VectorDB <T extends JVec>{
         return true;
     }
 
-    public Shape3D addStringToDB(String inputString) {
+    public JVec addStringToDB(String inputString) {
         JVec_STR vec = vectorizer.StringSimple(inputString);
         JVecDataBase.add((T) vec);
-        return getVectorSpaceShape(vec);
+        return vec;
     }
 
 
@@ -55,31 +55,13 @@ public final class VectorDB <T extends JVec>{
         JVecDataBase = (ArrayList<T>) dataBase.importDataBase(fileName);
     }
 
-    public ArrayList<? extends JVec> getVectorDataBase() {
+    public void importVectorDataFromFile() {
+
+    }
+
+    public ArrayList<T> getVectorDataBase() {
         return JVecDataBase;
     }
 
-    private Shape3D getVectorSpaceShape(JVec vec) {
-        Shape3D shape = null;
-        switch (JVecDB.ACTIVE_DATA_TYPE) {
-            case STRING -> {
-                switch (JVecDB.ACTIVE_SHAPE) {
-                    case BOX -> shape = getShapeStringBOX(vec);
-                    case SPHERE -> {
-                    }
-                }
-            }
-            case NULL -> Alerts.displayErrorMessage("No datatype selected for database!");
-        }
-        return shape;
-    }
 
-    private Shape3D getShapeStringBOX(JVec vec) {
-        JVec_STR vec_str = (JVec_STR) vec;
-        double radius = vec_str.getWorldLength() * dataBase.getScaleFactor();
-        double maxLetterValue = 150;
-
-        Point3D position = MathJVec.mapLetterValueToSphereSurface(vec_str.getLetterSum(), maxLetterValue, radius);
-        return new VecBox(new Point3D(5, 5, 5), position, Color.BLUE);
-    }
 }

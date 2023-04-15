@@ -27,16 +27,13 @@ public class DataBase {
     VectorDB vectorDB;
     DataBaseImport dbImport = new DataBaseImport();
     DataBaseExport dbExport = new DataBaseExport();
-    int scaleFactor = 5;
+
     public static String EXPORT_FOLDER = "JVecDB_Exports";
 
     public DataBase(VectorDB vectorDB) {
         this.vectorDB = vectorDB;
     }
 
-    public int getScaleFactor() {
-        return scaleFactor;
-    }
 
     public void makeExportFolder() {
         if (!dbExport.testForExportFolders()) {

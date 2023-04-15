@@ -13,7 +13,6 @@ package jvecdb;
 import javafx.geometry.Point3D;
 import javafx.stage.Stage;
 import jvecdb.database.VectorDB;
-import jvecdb.database.db.DataBase;
 import jvecdb.rendering.VectorSpaceFX;
 import jvecdb.utils.enums.DataType;
 import jvecdb.utils.enums.ExportType;
@@ -22,7 +21,6 @@ import jvecdb.utils.errorhandling.Alerts;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,14 +33,14 @@ public final class JVecDB {
     public static final String VERSION = "0.9.1";
     public static final boolean DEBUG = false;
     public static int WIDTH = 1280, HEIGHT = 960;
-    static final VectorSpaceFX vectorSpace = new VectorSpaceFX();
-    static final VectorDB vectorDB = new VectorDB();
+    public static final VectorSpaceFX vectorSpaceFX = new VectorSpaceFX();
+    public static final VectorDB vectorDB = new VectorDB();
     public static DataType ACTIVE_DATA_TYPE = DataType.STRING;
     public static VectorShape ACTIVE_SHAPE = VectorShape.BOX;
 
     public JVecDB(Stage stage) {
         try {
-            if (!vectorSpace.init(stage)) {
+            if (!vectorSpaceFX.init(stage)) {
                 throw new RuntimeException("Failed to startup!");
             }
             if (!vectorDB.init()) {
@@ -57,7 +55,7 @@ public final class JVecDB {
     public static <T> void addDBEntry(T entry) {
         switch (ACTIVE_DATA_TYPE) {
             case STRING -> {
-                if (!vectorSpace.addVisualEntry(vectorDB.addStringToDB((String) entry))) {
+                if (!vectorSpaceFX.addVisualEntry(vectorDB.addStringToDB((String) entry))) {
                     Alerts.displayErrorMessage("Can't add entry to database!");
                 }
             }
@@ -74,13 +72,10 @@ public final class JVecDB {
         vectorDB.importDataBase(fileName);
     }
 
-    public static Point3D getVectorSpace3DPosition() {
-        return vectorSpace.getPosition();
-    }
 
     public static void importWordsFromFile(String fileName) {
         try {
-            InputStream is = new FileInputStream( fileName);
+            InputStream is = new FileInputStream(fileName);
             BufferedReader br = new BufferedReader(new InputStreamReader(is, JVecDB.CHARSET));
             String line;
             while ((line = br.readLine()) != null) {
@@ -90,7 +85,11 @@ public final class JVecDB {
                 }
             }
         } catch (IOException e) {
-
+            Alerts.displayErrorMessage("Couldn't import file");
         }
+    }
+
+    public static void reloadVectorSpaceFX() {
+        vectorSpaceFX.reloadVectorSpaceFX();
     }
 }

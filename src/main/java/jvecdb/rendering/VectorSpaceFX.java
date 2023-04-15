@@ -21,15 +21,15 @@ import javafx.scene.SubScene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape3D;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import jvecdb.JVecDB;
-import jvecdb.rendering.ui.MenuBarJvec;
 import jvecdb.rendering.vectorspace.VectorSpace;
+import jvecdb.rendering.vectorspace.ui.MenuBarJvec;
 import jvecdb.utils.datastructures.vectors.JVec;
 import jvecdb.utils.datastructures.vectors.JVec_STR;
+import jvecdb.utils.errorhandling.Alerts;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 
 import java.awt.geom.Point2D;
@@ -67,8 +67,8 @@ public class VectorSpaceFX {
     Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
     Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
     Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
-    Translate translate = new Translate();
     int radius = 150;
+    static int scaleFactor = 5;
     double lastX, lastY, moveAmount = 10, azimuth, elevation;
     int zoomLevel;
 
@@ -113,7 +113,7 @@ public class VectorSpaceFX {
     }
 
     private void initOrigin() {
-        vectorSpace.addBox(new Point3D(5, 5, 5), new Point3D(0, 0, 0), Color.RED, JVec_STR.ZERO());
+        vectorSpace.addShapeToVectorSpace(new Point3D(5, 5, 5), new Point3D(0, 0, 0), Color.RED, JVec_STR.ZERO());
     }
 
     private void initCamera() {
@@ -270,13 +270,22 @@ public class VectorSpaceFX {
         camera.getTransforms().setAll(rotateX, rotateY, rotateZ);
     }
 
-    public boolean addVisualEntry(Shape3D shape) {
-        vectorSpace.addBox(shape);
+    public boolean addVisualEntry(JVec vec) {
+        vectorSpace.addShapeToVectorSpace(vectorSpace.getShapeFromVector(vec));
         return true;
     }
 
     public Point3D getPosition() {
         return new Point3D(camera.getTranslateX(), camera.getTranslateY(), camera.getTranslateZ());
+    }
+
+    public void reloadVectorSpaceFX() {
+        vectorSpace.clearVectorSpace();
+        boolean success;
+        success = vectorSpace.reloadVectorSpace();
+        if (!success) {
+            Alerts.displayErrorMessage("Couldn't reload vectorspace with new data!");
+        }
     }
 
     public Stage getStage() {
@@ -293,5 +302,9 @@ public class VectorSpaceFX {
 
     public Group getRoot() {
         return root;
+    }
+
+    public static int getScaleFactor() {
+        return scaleFactor;
     }
 }
