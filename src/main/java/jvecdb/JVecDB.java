@@ -10,7 +10,6 @@
 
 package jvecdb;
 
-import javafx.geometry.Point3D;
 import javafx.stage.Stage;
 import jvecdb.database.VectorDB;
 import jvecdb.rendering.VectorSpaceFX;
@@ -31,7 +30,7 @@ import java.nio.charset.StandardCharsets;
 public final class JVecDB {
     public static final Charset CHARSET = StandardCharsets.UTF_8;
     public static final String VERSION = "0.9.1";
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static int WIDTH = 1280, HEIGHT = 960;
     public static final VectorSpaceFX vectorSpaceFX = new VectorSpaceFX();
     public static final VectorDB vectorDB = new VectorDB();
@@ -70,6 +69,7 @@ public final class JVecDB {
 
     public static void importDataBase(String fileName) {
         vectorDB.importDataBase(fileName);
+        vectorSpaceFX.reloadVectorSpaceFX();
     }
 
 
@@ -87,9 +87,5 @@ public final class JVecDB {
         } catch (IOException e) {
             Alerts.displayErrorMessage("Couldn't import file");
         }
-    }
-
-    public static void reloadVectorSpaceFX() {
-        vectorSpaceFX.reloadVectorSpaceFX();
     }
 }

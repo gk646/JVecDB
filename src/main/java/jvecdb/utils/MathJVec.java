@@ -2,7 +2,7 @@ package jvecdb.utils;
 
 import javafx.geometry.Point3D;
 
-public class MathJVec {
+public final class MathJVec {
 
     public static Point3D mapLetterValueToSphereSurface(double letterValue, double maxLetterValue, double radius) {
         double indexRatio = letterValue / maxLetterValue; // Normalize the letter value to [0, 1] range

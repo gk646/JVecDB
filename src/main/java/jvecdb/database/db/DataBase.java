@@ -23,7 +23,8 @@ import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 import java.util.ArrayList;
 
 public class DataBase {
-    static final int VECTOR_LENGTH_STRING = 2;
+  public   static final int VECTOR_LENGTH_STRING = 2;
+    public  static final int META_DATA_LENGTH = 16;
     VectorDB vectorDB;
     DataBaseImport dbImport = new DataBaseImport();
     DataBaseExport dbExport = new DataBaseExport();
@@ -33,6 +34,7 @@ public class DataBase {
     public DataBase(VectorDB vectorDB) {
         this.vectorDB = vectorDB;
     }
+
 
 
     public void makeExportFolder() {

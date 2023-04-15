@@ -72,7 +72,27 @@ public final class DataBaseExport {
     }
 
     public String exportMixedFormat(ArrayList<JVec_STR> data, String fileName, ExportType exportType) {
+        long time;
+        if (JVecDB.DEBUG) {
+            time = System.nanoTime();
+        }
         try (FileOutputStream fos = new FileOutputStream(DataBase.EXPORT_FOLDER + File.separator + fileName + ".jvecdb")) {
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos));
+            // Write JSON metadata
+            writer.write("{\n");
+            writer.write("  \"database-info\": [\n");
+
+            writer.write("    {\n");
+
+            setupMetaData(data.size(), fileName, exportType);
+
+            for (int i = 0; i < metaData.size(); i++) {
+                writer.write("      \"" + metaData.get(i)[0] + "\": \"" + metaData.get(i)[1] + "\",\n");
+            }
+            writer.write("    }\n");
+            writer.write("         ]\n");
+            writer.write("}\n");
+            writer.flush();
             DataOutputStream dos = new DataOutputStream(fos);
             for (JVec_STR vec_str : data) {
                 byte[] wordBytes = vec_str.getByteValue();
@@ -84,24 +104,11 @@ public final class DataBaseExport {
                 }
             }
             dos.write("\n".getBytes());
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos));
-
-            // Write JSON metadata
-            writer.write("{\n");
-            writer.write("  \"database-info\": [\n");
-
-            writer.write("    {\n");
-
-            setupMetaData(data.size(), fileName, exportType);
-            for (int i = 0; i < metaData.size(); i++) {
-                writer.write("      \"" + metaData.get(i)[0] + "\": \"" + metaData.get(i)[1] + "\",\n");
-            }
-            writer.write("    }\n");
-            writer.write("         ]\n");
-            writer.write("}\n");
-            writer.flush();
         } catch (IOException e) {
             return "ERROR: Couldn't generate export\n" + e.getMessage();
+        }
+        if (JVecDB.DEBUG) {
+            System.out.println("Exported " + data.size() + " entries in: " + (System.nanoTime() - time));
         }
         return fileName + "|" + data.size();
     }

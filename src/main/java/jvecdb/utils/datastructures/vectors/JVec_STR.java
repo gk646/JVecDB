@@ -12,6 +12,11 @@ public final class JVec_STR extends JVec {
         byteString = s.getBytes(JVecDB.CHARSET);
     }
 
+    public JVec_STR(byte[] wordBytes, float[] vec) {
+        super(vec);
+        byteString = wordBytes;
+    }
+
     public float getWorldLength() {
         return vector[0];
     }
@@ -43,7 +48,7 @@ public final class JVec_STR extends JVec {
         for (int i = 0; i < vector.length; i++) {
             sb.append(vector[i]).append(", ");
         }
-        return  sb.append(getStringValue()).append("]").toString();
+        return sb.append(getStringValue()).append("]").toString();
     }
 
     public static JVec ZERO() {

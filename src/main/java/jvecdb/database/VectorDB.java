@@ -10,18 +10,11 @@
 
 package jvecdb.database;
 
-import javafx.geometry.Point3D;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Shape3D;
-import jvecdb.JVecDB;
 import jvecdb.database.db.DataBase;
 import jvecdb.database.vectorize.Vectorizer;
-import jvecdb.rendering.vectorspace.vectorshapes.VecBox;
-import jvecdb.utils.MathJVec;
 import jvecdb.utils.datastructures.vectors.JVec;
 import jvecdb.utils.datastructures.vectors.JVec_STR;
 import jvecdb.utils.enums.ExportType;
-import jvecdb.utils.errorhandling.Alerts;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -62,6 +55,4 @@ public final class VectorDB<T extends JVec> {
     public ArrayList<T> getVectorDataBase() {
         return JVecDataBase;
     }
-
-
 }

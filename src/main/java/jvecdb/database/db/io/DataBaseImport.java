@@ -11,15 +11,14 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
 public final class DataBaseImport {
 
     public DataBaseImport() {
+
     }
 
     public boolean testForImportFile(String absoluteFilename) {
@@ -62,38 +61,45 @@ public final class DataBaseImport {
 
 
     public ArrayList<JVec_STR> importMixedFormat(String fileName, int VECTOR_LENGTH) {
-        long time = System.nanoTime();
+        long time;
+        if (JVecDB.DEBUG) {
+            time = System.nanoTime();
+        }
         ArrayList<JVec_STR> data = new ArrayList<>();
+        byte[] wordBytes;
+        float[] vector;
+        int wordLength;
         try (InputStream is = new FileInputStream(DataBase.EXPORT_FOLDER + File.separator + fileName)) {
             DataInputStream dis = new DataInputStream(is);
-            while (dis.available() > 0) {
-                int wordLength = dis.readInt();
-                if (Math.abs(wordLength) > 100) {
+            String line;
+            int counter = 0;
+            while ((line = dis.readLine()) != null) {
+                //System.out.println(line);
+                counter++;
+                if (counter == DataBase.META_DATA_LENGTH) {
                     break;
                 }
-                byte[] wordBytes = new byte[wordLength];
+            }
+            while (true) {
+                wordLength = dis.readInt();
+                wordBytes = new byte[wordLength];
                 dis.readFully(wordBytes);
 
-                String word = new String(wordBytes, JVecDB.CHARSET);
-                float[] vector = new float[VECTOR_LENGTH];
+                vector = new float[VECTOR_LENGTH];
                 for (int i = 0; i < VECTOR_LENGTH; i++) {
                     vector[i] = dis.readFloat();
                 }
-                JVec_STR vec = new JVec_STR(word, vector);
+                JVec_STR vec = new JVec_STR(wordBytes, vector);
                 data.add(vec);
-            }
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(is, JVecDB.CHARSET));
-            String line;
-            while ((line = br.readLine()) != null) {
-                //System.out.println(line);
+                if (dis.available() < 2) {
+                    break;
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println((System.nanoTime() - time));
-        for (JVec_STR vec_str : data) {
-            System.out.println(vec_str);
+        if (JVecDB.DEBUG) {
+            System.out.println("Imported "+data.size()+" entries in: "+(System.nanoTime() - time));
         }
         return data;
     }
