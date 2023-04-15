@@ -83,6 +83,7 @@ public final class DataBaseExport {
                     dos.writeFloat(value);
                 }
             }
+            dos.write("\n".getBytes());
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos));
 
             // Write JSON metadata
