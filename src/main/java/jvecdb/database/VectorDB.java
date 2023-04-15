@@ -20,22 +20,22 @@ import jvecdb.rendering.vectorspace.vectorshapes.VecBox;
 import jvecdb.utils.MathJVec;
 import jvecdb.utils.datastructures.vectors.JVec;
 import jvecdb.utils.datastructures.vectors.JVec_STR;
+import jvecdb.utils.enums.ExportType;
 import jvecdb.utils.errorhandling.Alerts;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class VectorDB {
+public final class VectorDB {
     DataBase dataBase;
     Vectorizer vectorizer;
     ArrayList<JVec> JVecDataBase = new ArrayList<>();
 
 
     public boolean init() throws IOException {
-        dataBase.makeExportFolder();
         dataBase = new DataBase();
         vectorizer = new Vectorizer();
-
+        dataBase.makeExportFolder();
         return true;
     }
 
@@ -49,6 +49,10 @@ public class VectorDB {
 
     public ArrayList<JVec> getVectorDataBase() {
         return JVecDataBase;
+    }
+
+    public void exportDataBase(String fileName, ExportType exportType) {
+        dataBase.exportDataBase(JVecDataBase, fileName, exportType);
     }
 
     private Shape3D getVectorSpaceShape(JVec vec) {

@@ -10,20 +10,27 @@
 
 package jvecdb;
 
+import javafx.geometry.Point3D;
 import javafx.stage.Stage;
 import jvecdb.database.VectorDB;
 import jvecdb.rendering.VectorSpaceFX;
 import jvecdb.utils.enums.DataType;
+import jvecdb.utils.enums.ExportType;
 import jvecdb.utils.enums.VectorShape;
 import jvecdb.utils.errorhandling.Alerts;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
-public class JVecDB {
+public final class JVecDB {
+    public static final Charset CHARSETS = StandardCharsets.US_ASCII;
+    public static final String VERSION = "0.9.1";
+    public static final boolean DEBUG = true;
     public static int WIDTH = 1280, HEIGHT = 960;
-    static VectorSpaceFX vectorSpace = new VectorSpaceFX();
-    static VectorDB vectorDB = new VectorDB();
+    static final VectorSpaceFX vectorSpace = new VectorSpaceFX();
+    static final VectorDB vectorDB = new VectorDB();
     public static DataType ACTIVE_DATA_TYPE = DataType.STRING;
     public static VectorShape ACTIVE_SHAPE = VectorShape.BOX;
 
@@ -51,6 +58,19 @@ public class JVecDB {
             }
             case NULL -> Alerts.displayErrorMessage("No datatype for database selected!");
         }
+    }
+
+
+    public static void exportDataBase(String fileName, ExportType exportType) {
+        vectorDB.exportDataBase(fileName, exportType);
+    }
+
+    public static Point3D getVectorSpace3DPosition() {
+        return vectorSpace.getPosition();
+    }
+
+    public static void importDataBase() {
+
     }
 }
 

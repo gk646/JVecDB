@@ -1,12 +1,19 @@
 package jvecdb.database.db.io;
 
+import jvecdb.JVecDB;
+import jvecdb.database.db.DataBase;
 import jvecdb.utils.datastructures.vectors.JVec_STR;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public final class DataBaseImport {
 
@@ -45,4 +52,49 @@ public final class DataBaseImport {
         }
         return data;
     }
+
+
+    public ArrayList<JVec_STR> importMixedFormat(String fileName) {
+        ArrayList<JVec_STR> data = new ArrayList<>();
+
+        try (FileInputStream fis = new FileInputStream(DataBase.EXPORT_FOLDER  + File.separator + fileName + ".mixed");
+             DataInputStream dis = new DataInputStream(fis)) {
+
+            while (dis.available() > 0) {
+                int wordLength = dis.readInt();
+                byte[] wordBytes = new byte[wordLength];
+                dis.readFully(wordBytes);
+
+                String word = new String(wordBytes, JVecDB.CHARSETS);
+
+                ArrayList<Float> vectorList = new ArrayList<>();
+                try {
+                    while (true) {
+                        float value = dis.readFloat();
+                        vectorList.add(value);
+                    }
+                } catch (EOFException e) {
+                    // End of vector data
+                }
+
+                float[] vector = new float[vectorList.size()];
+                for (int i = 0; i < vectorList.size(); i++) {
+                    vector[i] = vectorList.get(i);
+                }
+
+                JVec_STR vec_str = new JVec_STR(word, vector);
+                data.add(vec_str);
+
+                // Read and discard end bytes
+                for (int i = 0; i < 4; i++) {
+                    dis.readByte();
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return data;
+    }
+
 }

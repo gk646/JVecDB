@@ -16,7 +16,7 @@ import org.nd4j.common.io.ClassPathResource;
 
 import java.io.IOException;
 
-public class Vectorizer {
+public final class Vectorizer {
 
 
     public Vectorizer() throws IOException {

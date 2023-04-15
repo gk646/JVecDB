@@ -1,15 +1,15 @@
 package jvecdb.utils.datastructures.vectors;
 
-import java.nio.charset.StandardCharsets;
+import jvecdb.JVecDB;
 
 public final class JVec_STR extends JVec {
 
-    private final byte[] stringValue;
+    private final byte[] byteString;
 
 
     public JVec_STR(String s, float[] vec) {
         super(vec);
-        stringValue = s.getBytes(StandardCharsets.US_ASCII);
+        byteString = s.getBytes(JVecDB.CHARSETS);
     }
 
     public float getWorldLength() {
@@ -21,10 +21,14 @@ public final class JVec_STR extends JVec {
     }
 
     public String getStringValue() {
-        StringBuilder sb = new StringBuilder(stringValue.length);
-        for (byte b : stringValue) {
+        StringBuilder sb = new StringBuilder(byteString.length);
+        for (byte b : byteString) {
             sb.append((char) b);
         }
         return sb.toString();
+    }
+
+    public byte[] getByteValue() {
+        return byteString;
     }
 }

@@ -10,7 +10,6 @@
 
 package jvecdb.utils.datastructures;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.RandomAccess;
 
@@ -18,7 +17,6 @@ public final class ArrayListJVec<T> implements RandomAccess {
     private int size = 0;
     private T[] elements;
 
-    ArrayList arrayList = new ArrayList<>();
 
     ArrayListJVec(int initialCapacity) {
         size = initialCapacity;

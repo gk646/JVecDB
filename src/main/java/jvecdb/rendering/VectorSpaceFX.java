@@ -26,7 +26,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 import jvecdb.JVecDB;
-import jvecdb.rendering.ui.BasicUI;
+import jvecdb.rendering.ui.MenuBarJvec;
 import jvecdb.rendering.vectorspace.VectorSpace;
 import jvecdb.utils.datastructures.vectors.JVec;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
@@ -61,7 +61,7 @@ public class VectorSpaceFX {
     /**
      * BasicUI
      */
-    private final BasicUI basicUI = new BasicUI();
+    private final MenuBarJvec menuBarJvec = new MenuBarJvec();
     //VARIABLES
     Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
     Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
@@ -87,7 +87,7 @@ public class VectorSpaceFX {
         BorderPane root = new BorderPane();
 
         // Create and add the menu bar to the top of the root layout
-        root.setTop(basicUI);
+        root.setTop(menuBarJvec);
 
         // Create the main 3D scene and set it as the center of the root layout
         Group sceneRoot = new Group();
@@ -209,8 +209,10 @@ public class VectorSpaceFX {
             }
             lastX = event.getSceneX();
             lastY = event.getSceneY();
-            System.out.println("Rotation: " + rotateX.getAngle() + " " + rotateY.getAngle() + " " + rotateZ.getAngle());
-            System.out.println("Translation: " + camera.getTranslateX() + " " + camera.getTranslateY() + " " + camera.getTranslateZ());
+            if (JVecDB.DEBUG) {
+                System.out.println("Rotation: " + rotateX.getAngle() + " " + rotateY.getAngle() + " " + rotateZ.getAngle());
+                System.out.println("Translation: " + camera.getTranslateX() + " " + camera.getTranslateY() + " " + camera.getTranslateZ());
+            }
         });
         mainScene.setOnKeyPressed(event -> {
             double cameraYaw = Math.toRadians(rotateY.getAngle());
@@ -270,6 +272,10 @@ public class VectorSpaceFX {
     public boolean addVisualEntry(Shape3D shape) {
         vectorSpace.addBox(shape);
         return true;
+    }
+
+    public Point3D getPosition() {
+        return new Point3D(camera.getTranslateX(), camera.getTranslateY(), camera.getTranslateZ());
     }
 
     public Stage getStage() {

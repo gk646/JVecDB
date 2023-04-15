@@ -9,7 +9,7 @@ import jvecdb.utils.datastructures.vectors.JVec;
 
 import java.util.ArrayList;
 
-public class VectorSpace {
+public final class VectorSpace {
     private final Group root;
 
     private final ArrayList<Shape3D> shapes = new ArrayList<>();

@@ -5,14 +5,15 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import jvecdb.JVecDB;
+import jvecdb.utils.enums.ExportType;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class BasicUI extends MenuBar {
+public class MenuBarJvec extends MenuBar {
 
 
-    public BasicUI() {
+    public MenuBarJvec() {
         ArrayList<Menu> menus = new ArrayList<>();
 
         menus.add(createHelpMenu());
@@ -47,22 +48,34 @@ public class BasicUI extends MenuBar {
         MenuItem aboutItem = new MenuItem("add Entry");
         aboutItem.setOnAction(e -> {
             TextInputDialog inputDialog = new TextInputDialog();
-            inputDialog.setTitle("Enter text");
-            inputDialog.setHeaderText("Please enter your text");
+            inputDialog.setTitle("Add a new entry to the database");
+            inputDialog.setHeaderText("Enter a word (a-z, A-Z, whitespace ignored)");
             inputDialog.setContentText("Text:");
 
-            // Show the dialog and get the user input (if 'Submit' is clicked)
+
             Optional<String> result = inputDialog.showAndWait();
 
-            // If the user clicked 'Submit', call the handleInputText method with the entered text
+
             result.ifPresent(JVecDB::addDBEntry);
         });
 
+        MenuItem exportDataBase = new MenuItem("Export DataBase as binary");
 
-        menu.getItems().add(aboutItem);
+        exportDataBase.setOnAction(e -> {
+            TextInputDialog inputDialog = new TextInputDialog();
+            inputDialog.setTitle("Export the current database state to file");
+            inputDialog.setHeaderText("Please enter a file name");
+            inputDialog.setContentText("Filename:");
+
+            Optional<String> result = inputDialog.showAndWait();
+
+
+            result.ifPresent(filename -> JVecDB.exportDataBase(filename, ExportType.BINARY));
+        });
+
+
+        menu.getItems().addAll(aboutItem, exportDataBase);
 
         return menu;
     }
-
-
 }

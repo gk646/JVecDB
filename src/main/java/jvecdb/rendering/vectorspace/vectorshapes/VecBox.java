@@ -6,7 +6,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import jvecdb.utils.datastructures.vectors.JVec;
 
-public class VecBox extends Box {
+public final class VecBox extends Box {
 
     private JVec vector;
 

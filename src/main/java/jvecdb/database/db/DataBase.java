@@ -10,15 +10,22 @@
 
 package jvecdb.database.db;
 
+import jvecdb.JVecDB;
 import jvecdb.database.db.io.DataBaseExport;
 import jvecdb.database.db.io.DataBaseImport;
+import jvecdb.utils.datastructures.vectors.JVec;
+import jvecdb.utils.datastructures.vectors.JVec_STR;
+import jvecdb.utils.enums.ExportType;
+import jvecdb.utils.errorhandling.Alerts;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
+
+import java.util.ArrayList;
 
 public class DataBase {
     DataBaseImport dbImport = new DataBaseImport();
     DataBaseExport dbExport = new DataBaseExport();
     int scaleFactor = 5;
-
+    public static String EXPORT_FOLDER = "JVecDB_Exports";
     public DataBase() {
         getDBFile();
     }
@@ -32,14 +39,25 @@ public class DataBase {
         return scaleFactor;
     }
 
-
     public void makeExportFolder() {
         if (!dbExport.testForExportFolders()) {
             throw new StartupFailure("Couldn't create export folders!");
         }
     }
 
-    // public <T> T getOrigin(){
-
-    //}
+    public <T extends JVec> void exportDataBase(ArrayList<T> dataBase, String fileName, ExportType exportType) {
+        String saveMessage = "Couldn't export database to file";
+        switch (JVecDB.ACTIVE_DATA_TYPE) {
+            case STRING -> saveMessage = dbExport.exportMixedFormat((ArrayList<JVec_STR>) dataBase, fileName,exportType);
+            case IMAGE -> {
+            }
+            case SOUND -> {
+            }
+        }
+        if (saveMessage.contains("ERROR")) {
+            Alerts.displayErrorMessage(saveMessage);
+        } else {
+            Alerts.displayInformationDataBaseExport(saveMessage.split("\\|"));
+        }
+    }
 }
