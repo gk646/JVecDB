@@ -59,7 +59,7 @@ public class MenuBarJvec extends MenuBar {
             result.ifPresent(JVecDB::addDBEntry);
         });
 
-        MenuItem exportDataBase = new MenuItem("Export DataBase as binary");
+        MenuItem exportDataBase = new MenuItem("Export dataBase as binary");
 
         exportDataBase.setOnAction(e -> {
             TextInputDialog inputDialog = new TextInputDialog();
@@ -74,7 +74,35 @@ public class MenuBarJvec extends MenuBar {
         });
 
 
-        menu.getItems().addAll(aboutItem, exportDataBase);
+
+        MenuItem importDataBase = new MenuItem("Import dataBase from binary");
+
+        importDataBase.setOnAction(e -> {
+            TextInputDialog inputDialog = new TextInputDialog();
+            inputDialog.setTitle("Import a saved binary database");
+            inputDialog.setHeaderText("Please enter a file name (without suffix)");
+            inputDialog.setContentText("Filename:");
+
+            Optional<String> result = inputDialog.showAndWait();
+
+
+            result.ifPresent(filename ->JVecDB.importDataBase(filename+".jvecdb"));
+        });
+
+        MenuItem importWordsFromFile = new MenuItem("Import words from file");
+
+        importWordsFromFile.setOnAction(e -> {
+            TextInputDialog inputDialog = new TextInputDialog();
+            inputDialog.setTitle("Import a saved binary database");
+            inputDialog.setHeaderText("Please enter a file name (without suffix)");
+            inputDialog.setContentText("Filename:");
+
+            Optional<String> result = inputDialog.showAndWait();
+
+            result.ifPresent(JVecDB::importWordsFromFile);
+        });
+
+        menu.getItems().addAll(aboutItem, exportDataBase,importDataBase,importWordsFromFile);
 
         return menu;
     }

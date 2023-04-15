@@ -13,6 +13,7 @@ package jvecdb;
 import javafx.geometry.Point3D;
 import javafx.stage.Stage;
 import jvecdb.database.VectorDB;
+import jvecdb.database.db.DataBase;
 import jvecdb.rendering.VectorSpaceFX;
 import jvecdb.utils.enums.DataType;
 import jvecdb.utils.enums.ExportType;
@@ -20,14 +21,19 @@ import jvecdb.utils.enums.VectorShape;
 import jvecdb.utils.errorhandling.Alerts;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public final class JVecDB {
-    public static final Charset CHARSETS = StandardCharsets.US_ASCII;
+    public static final Charset CHARSET = StandardCharsets.UTF_8;
     public static final String VERSION = "0.9.1";
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static int WIDTH = 1280, HEIGHT = 960;
     static final VectorSpaceFX vectorSpace = new VectorSpaceFX();
     static final VectorDB vectorDB = new VectorDB();
@@ -51,8 +57,7 @@ public final class JVecDB {
     public static <T> void addDBEntry(T entry) {
         switch (ACTIVE_DATA_TYPE) {
             case STRING -> {
-                if (vectorSpace.addVisualEntry(vectorDB.addStringToDB((String) entry))) {
-                } else {
+                if (!vectorSpace.addVisualEntry(vectorDB.addStringToDB((String) entry))) {
                     Alerts.displayErrorMessage("Can't add entry to database!");
                 }
             }
@@ -65,12 +70,27 @@ public final class JVecDB {
         vectorDB.exportDataBase(fileName, exportType);
     }
 
+    public static void importDataBase(String fileName) {
+        vectorDB.importDataBase(fileName);
+    }
+
     public static Point3D getVectorSpace3DPosition() {
         return vectorSpace.getPosition();
     }
 
-    public static void importDataBase() {
+    public static void importWordsFromFile(String fileName) {
+        try {
+            InputStream is = new FileInputStream( fileName);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, JVecDB.CHARSET));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] words = line.trim().split("\\s+");
+                for (String word : words) {
+                    addDBEntry(word);
+                }
+            }
+        } catch (IOException e) {
 
+        }
     }
 }
-

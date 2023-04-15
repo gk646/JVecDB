@@ -4,7 +4,7 @@ import org.apache.commons.math3.exception.MathArithmeticException;
 
 import java.util.Arrays;
 
-public class JVec {
+abstract public class JVec {
     protected final float[] vector;
 
     public JVec(float[] vec) {
@@ -46,10 +46,6 @@ public class JVec {
         return hash;
     }
 
-    public static JVec ZERO() {
-        return new JVec(new float[]{});
-    }
-
     public static float dotProduct(JVec vec1, JVec vec2) {
         if (vec1.getLength() != vec2.getLength()) throw new MathArithmeticException();
         int len = vec1.getLength();
@@ -66,5 +62,9 @@ public class JVec {
             result += v * v;
         }
         return Math.sqrt(result);
+    }
+
+    public <T> T getSpecialVal() {
+        return null;
     }
 }

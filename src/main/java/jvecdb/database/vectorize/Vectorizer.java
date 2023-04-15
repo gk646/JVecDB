@@ -30,7 +30,7 @@ public final class Vectorizer {
         //SentenceIterator iter = new BasicLineIterator(filePath);
     }
 
-    public JVec StringSimple(String s) {
+    public JVec_STR StringSimple(String s) {
         float letterVal = 0;
         int len = s.length();
         for (var letter : s.toCharArray()) {
@@ -41,7 +41,8 @@ public final class Vectorizer {
             } else if (Character.isLowerCase(letter)) {
                 letterVal += letter - 'a' + 1;
             } else {
-                Alerts.displayErrorMessage("Invalid input. The input must be alphabetical characters or whitespace (ignored).");
+                //Alerts.displayErrorMessage("Invalid input. The input must be alphabetical characters or whitespace (ignored).");
+                break;
             }
         }
         return new JVec_STR(s, new float[]{len, letterVal});

@@ -6,20 +6,27 @@ import jvecdb.utils.datastructures.vectors.JVec_STR;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
 public final class DataBaseImport {
 
     public DataBaseImport() {
-
     }
+
+    public boolean testForImportFile(String absoluteFilename) {
+        File directory = new File(DataBase.EXPORT_FOLDER + File.separator + absoluteFilename);
+        return directory.exists();
+    }
+
 
     public List<JVec_STR> importFromXML(String filePath) throws IOException {
         List<JVec_STR> data = new ArrayList<>();
@@ -54,47 +61,40 @@ public final class DataBaseImport {
     }
 
 
-    public ArrayList<JVec_STR> importMixedFormat(String fileName) {
+    public ArrayList<JVec_STR> importMixedFormat(String fileName, int VECTOR_LENGTH) {
+        long time = System.nanoTime();
         ArrayList<JVec_STR> data = new ArrayList<>();
-
-        try (FileInputStream fis = new FileInputStream(DataBase.EXPORT_FOLDER  + File.separator + fileName + ".mixed");
-             DataInputStream dis = new DataInputStream(fis)) {
-
+        try (InputStream is = new FileInputStream(DataBase.EXPORT_FOLDER + File.separator + fileName)) {
+            DataInputStream dis = new DataInputStream(is);
             while (dis.available() > 0) {
                 int wordLength = dis.readInt();
+                if (Math.abs(wordLength) > 100) {
+                    break;
+                }
                 byte[] wordBytes = new byte[wordLength];
                 dis.readFully(wordBytes);
 
-                String word = new String(wordBytes, JVecDB.CHARSETS);
-
-                ArrayList<Float> vectorList = new ArrayList<>();
-                try {
-                    while (true) {
-                        float value = dis.readFloat();
-                        vectorList.add(value);
-                    }
-                } catch (EOFException e) {
-                    // End of vector data
+                String word = new String(wordBytes, JVecDB.CHARSET);
+                float[] vector = new float[VECTOR_LENGTH];
+                for (int i = 0; i < VECTOR_LENGTH; i++) {
+                    vector[i] = dis.readFloat();
                 }
+                JVec_STR vec = new JVec_STR(word, vector);
+                data.add(vec);
+            }
 
-                float[] vector = new float[vectorList.size()];
-                for (int i = 0; i < vectorList.size(); i++) {
-                    vector[i] = vectorList.get(i);
-                }
-
-                JVec_STR vec_str = new JVec_STR(word, vector);
-                data.add(vec_str);
-
-                // Read and discard end bytes
-                for (int i = 0; i < 4; i++) {
-                    dis.readByte();
-                }
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, JVecDB.CHARSET));
+            String line;
+            while ((line = br.readLine()) != null) {
+                //System.out.println(line);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        System.out.println((System.nanoTime() - time));
+        for (JVec_STR vec_str : data) {
+            System.out.println(vec_str);
+        }
         return data;
     }
-
 }

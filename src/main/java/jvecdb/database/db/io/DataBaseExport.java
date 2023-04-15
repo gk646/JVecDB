@@ -72,9 +72,18 @@ public final class DataBaseExport {
     }
 
     public String exportMixedFormat(ArrayList<JVec_STR> data, String fileName, ExportType exportType) {
-        byte[] endBytes = new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
-        try (FileOutputStream fos = new FileOutputStream(DataBase.EXPORT_FOLDER + File.separator + fileName + ".mixed");
-             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos))) {
+        try (FileOutputStream fos = new FileOutputStream(DataBase.EXPORT_FOLDER + File.separator + fileName + ".jvecdb")) {
+            DataOutputStream dos = new DataOutputStream(fos);
+            for (JVec_STR vec_str : data) {
+                byte[] wordBytes = vec_str.getByteValue();
+                dos.writeInt(wordBytes.length);
+                dos.write(wordBytes);
+                float[] vector = vec_str.getVector();
+                for (float value : vector) {
+                    dos.writeFloat(value);
+                }
+            }
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(fos));
 
             // Write JSON metadata
             writer.write("{\n");
@@ -90,25 +99,9 @@ public final class DataBaseExport {
             writer.write("         ]\n");
             writer.write("}\n");
             writer.flush();
-
-            DataOutputStream dos = new DataOutputStream(fos);
-
-            for (JVec_STR vec_str : data) {
-                byte[] wordBytes = vec_str.getByteValue();
-                dos.writeInt(wordBytes.length);
-                dos.write(wordBytes);
-
-                float[] vector = vec_str.getVector();
-                for (float value : vector) {
-                    dos.writeFloat(value);
-                }
-
-                dos.write(endBytes);
-            }
         } catch (IOException e) {
             return "ERROR: Couldn't generate export\n" + e.getMessage();
         }
-
         return fileName + "|" + data.size();
     }
 

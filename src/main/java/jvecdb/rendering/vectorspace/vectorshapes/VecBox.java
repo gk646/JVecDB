@@ -26,4 +26,8 @@ public final class VecBox extends Box {
     public JVec getVector() {
         return vector;
     }
+
+    public <T> T getVectorSpecialVal() {
+        return vector.getSpecialVal();
+    }
 }

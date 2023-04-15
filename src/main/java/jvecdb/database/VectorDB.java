@@ -26,33 +26,37 @@ import jvecdb.utils.errorhandling.Alerts;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public final class VectorDB {
+public final class VectorDB <T extends JVec>{
+    public static boolean IMPORTED_FLAG = false;
     DataBase dataBase;
     Vectorizer vectorizer;
-    ArrayList<JVec> JVecDataBase = new ArrayList<>();
+    ArrayList<T> JVecDataBase = new ArrayList<>();
 
 
     public boolean init() throws IOException {
-        dataBase = new DataBase();
+        dataBase = new DataBase(this);
         vectorizer = new Vectorizer();
         dataBase.makeExportFolder();
         return true;
     }
 
     public Shape3D addStringToDB(String inputString) {
-        JVec vec = vectorizer.StringSimple(inputString);
-        JVecDataBase.add(vec);
-
-        System.out.println(vec);
+        JVec_STR vec = vectorizer.StringSimple(inputString);
+        JVecDataBase.add((T) vec);
         return getVectorSpaceShape(vec);
     }
 
-    public ArrayList<JVec> getVectorDataBase() {
-        return JVecDataBase;
-    }
 
     public void exportDataBase(String fileName, ExportType exportType) {
         dataBase.exportDataBase(JVecDataBase, fileName, exportType);
+    }
+
+    public void importDataBase(String fileName) {
+        JVecDataBase = (ArrayList<T>) dataBase.importDataBase(fileName);
+    }
+
+    public ArrayList<? extends JVec> getVectorDataBase() {
+        return JVecDataBase;
     }
 
     private Shape3D getVectorSpaceShape(JVec vec) {
@@ -76,7 +80,6 @@ public final class VectorDB {
         double maxLetterValue = 150;
 
         Point3D position = MathJVec.mapLetterValueToSphereSurface(vec_str.getLetterSum(), maxLetterValue, radius);
-        System.out.println(position);
         return new VecBox(new Point3D(5, 5, 5), position, Color.BLUE);
     }
 }

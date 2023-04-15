@@ -11,6 +11,7 @@
 package jvecdb.database.db;
 
 import jvecdb.JVecDB;
+import jvecdb.database.VectorDB;
 import jvecdb.database.db.io.DataBaseExport;
 import jvecdb.database.db.io.DataBaseImport;
 import jvecdb.utils.datastructures.vectors.JVec;
@@ -22,17 +23,15 @@ import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 import java.util.ArrayList;
 
 public class DataBase {
+    static final int VECTOR_LENGTH_STRING = 2;
+    VectorDB vectorDB;
     DataBaseImport dbImport = new DataBaseImport();
     DataBaseExport dbExport = new DataBaseExport();
     int scaleFactor = 5;
     public static String EXPORT_FOLDER = "JVecDB_Exports";
-    public DataBase() {
-        getDBFile();
-    }
 
-
-    private void getDBFile() {
-
+    public DataBase(VectorDB vectorDB) {
+        this.vectorDB = vectorDB;
     }
 
     public int getScaleFactor() {
@@ -46,14 +45,30 @@ public class DataBase {
     }
 
     public <T extends JVec> void exportDataBase(ArrayList<T> dataBase, String fileName, ExportType exportType) {
-        String saveMessage = "Couldn't export database to file";
+        String saveMessage = "ERROR: Couldn't export database to file";
         switch (JVecDB.ACTIVE_DATA_TYPE) {
-            case STRING -> saveMessage = dbExport.exportMixedFormat((ArrayList<JVec_STR>) dataBase, fileName,exportType);
+            case STRING -> saveMessage = dbExport.exportMixedFormat((ArrayList<JVec_STR>) dataBase, fileName, exportType);
             case IMAGE -> {
             }
             case SOUND -> {
             }
         }
+        triggerAlerts(saveMessage);
+    }
+
+    public ArrayList<JVec_STR> importDataBase(String fileName) {
+        if (fileName.contains(".jvecdb")) {
+            isValidImportPath(fileName);
+            return dbImport.importMixedFormat(fileName, VECTOR_LENGTH_STRING);
+        }
+        return null;
+    }
+
+    private void isValidImportPath(String fileName) {
+        if (!dbImport.testForImportFile(fileName)) Alerts.displayErrorMessage("ERROR: Couldn't import database to file");
+    }
+
+    private void triggerAlerts(String saveMessage) {
         if (saveMessage.contains("ERROR")) {
             Alerts.displayErrorMessage(saveMessage);
         } else {

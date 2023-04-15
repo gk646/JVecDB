@@ -29,6 +29,7 @@ import jvecdb.JVecDB;
 import jvecdb.rendering.ui.MenuBarJvec;
 import jvecdb.rendering.vectorspace.VectorSpace;
 import jvecdb.utils.datastructures.vectors.JVec;
+import jvecdb.utils.datastructures.vectors.JVec_STR;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 
 import java.awt.geom.Point2D;
@@ -112,7 +113,7 @@ public class VectorSpaceFX {
     }
 
     private void initOrigin() {
-        vectorSpace.addBox(new Point3D(5, 5, 5), new Point3D(0, 0, 0), Color.RED, JVec.ZERO());
+        vectorSpace.addBox(new Point3D(5, 5, 5), new Point3D(0, 0, 0), Color.RED, JVec_STR.ZERO());
     }
 
     private void initCamera() {
