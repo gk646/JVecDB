@@ -3,7 +3,7 @@ package jvecdb.database.db.io;
 import javafx.geometry.Point3D;
 import jvecdb.JVecDB;
 import jvecdb.database.db.DataBase;
-import jvecdb.utils.datastructures.vectors.JVec_STR;
+import jvecdb.utils.datastructures.datavectors.JVec_STR;
 import jvecdb.utils.enums.ExportType;
 
 import java.io.BufferedWriter;
@@ -81,11 +81,8 @@ public final class DataBaseExport {
             // Write JSON metadata
             writer.write("{\n");
             writer.write("  \"database-info\": [\n");
-
             writer.write("    {\n");
-
             setupMetaData(data.size(), fileName, exportType);
-
             for (int i = 0; i < metaData.size(); i++) {
                 writer.write("      \"" + metaData.get(i)[0] + "\": \"" + metaData.get(i)[1] + "\",\n");
             }
@@ -96,19 +93,18 @@ public final class DataBaseExport {
             DataOutputStream dos = new DataOutputStream(fos);
             for (JVec_STR vec_str : data) {
                 byte[] wordBytes = vec_str.getByteValue();
-                dos.writeInt(wordBytes.length);
+                dos.writeByte((byte)wordBytes.length);
                 dos.write(wordBytes);
                 float[] vector = vec_str.getVector();
                 for (float value : vector) {
                     dos.writeFloat(value);
                 }
             }
-            dos.write("\n".getBytes());
         } catch (IOException e) {
             return "ERROR: Couldn't generate export\n" + e.getMessage();
         }
         if (JVecDB.DEBUG) {
-            System.out.println("Exported " + data.size() + " entries in: " + (System.nanoTime() - time));
+            System.out.println("Exported " + data.size() + " entries in: " + (System.nanoTime() - time)/10000);
         }
         return fileName + "|" + data.size();
     }
@@ -118,7 +114,7 @@ public final class DataBaseExport {
         metaData.clear();
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        Point3D position = JVecDB.vectorSpaceFX.getPosition();
+        Point3D position = JVecDB.vectorSpaceFX.getCameraPosition();
         int index = 0;
         metaData.put(index++, new String[]{"time", now.format(formatter)});
         metaData.put(index++, new String[]{"jvecdbversion", JVecDB.VERSION});

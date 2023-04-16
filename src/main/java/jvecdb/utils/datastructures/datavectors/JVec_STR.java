@@ -1,4 +1,4 @@
-package jvecdb.utils.datastructures.vectors;
+package jvecdb.utils.datastructures.datavectors;
 
 import jvecdb.JVecDB;
 

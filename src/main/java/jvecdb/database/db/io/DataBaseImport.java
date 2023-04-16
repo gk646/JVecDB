@@ -2,7 +2,7 @@ package jvecdb.database.db.io;
 
 import jvecdb.JVecDB;
 import jvecdb.database.db.DataBase;
-import jvecdb.utils.datastructures.vectors.JVec_STR;
+import jvecdb.utils.datastructures.datavectors.JVec_STR;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -81,7 +81,7 @@ public final class DataBaseImport {
                 }
             }
             while (true) {
-                wordLength = dis.readInt();
+                wordLength = dis.readUnsignedByte();
                 wordBytes = new byte[wordLength];
                 dis.readFully(wordBytes);
 
@@ -91,7 +91,7 @@ public final class DataBaseImport {
                 }
                 JVec_STR vec = new JVec_STR(wordBytes, vector);
                 data.add(vec);
-                if (dis.available() < 2) {
+                if (dis.available() == 0) {
                     break;
                 }
             }
@@ -99,7 +99,7 @@ public final class DataBaseImport {
             e.printStackTrace();
         }
         if (JVecDB.DEBUG) {
-            System.out.println("Imported "+data.size()+" entries in: "+(System.nanoTime() - time));
+            System.out.println("Imported " + data.size() + " entries in: " + (System.nanoTime() - time) / 10000);
         }
         return data;
     }

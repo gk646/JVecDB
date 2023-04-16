@@ -1,4 +1,4 @@
-package jvecdb.utils.datastructures.vectors;
+package jvecdb.utils.datastructures.datavectors;
 
 import org.apache.commons.math3.exception.MathArithmeticException;
 

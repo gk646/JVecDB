@@ -9,9 +9,7 @@
  */
 package jvecdb.database.vectorize;
 
-import jvecdb.utils.datastructures.vectors.JVec;
-import jvecdb.utils.datastructures.vectors.JVec_STR;
-import jvecdb.utils.errorhandling.Alerts;
+import jvecdb.utils.datastructures.datavectors.JVec_STR;
 import org.nd4j.common.io.ClassPathResource;
 
 import java.io.IOException;

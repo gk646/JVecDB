@@ -74,18 +74,6 @@ public final class JVecDB {
 
 
     public static void importWordsFromFile(String fileName) {
-        try {
-            InputStream is = new FileInputStream(fileName);
-            BufferedReader br = new BufferedReader(new InputStreamReader(is, JVecDB.CHARSET));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] words = line.trim().split("\\s+");
-                for (String word : words) {
-                    addDBEntry(word);
-                }
-            }
-        } catch (IOException e) {
-            Alerts.displayErrorMessage("Couldn't import file");
-        }
+        vectorDB.importVectorDataFromFile(fileName);
     }
 }

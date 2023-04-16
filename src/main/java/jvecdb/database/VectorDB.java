@@ -10,13 +10,19 @@
 
 package jvecdb.database;
 
+import jvecdb.JVecDB;
 import jvecdb.database.db.DataBase;
 import jvecdb.database.vectorize.Vectorizer;
-import jvecdb.utils.datastructures.vectors.JVec;
-import jvecdb.utils.datastructures.vectors.JVec_STR;
+import jvecdb.utils.datastructures.datavectors.JVec;
+import jvecdb.utils.datastructures.datavectors.JVec_STR;
 import jvecdb.utils.enums.ExportType;
+import jvecdb.utils.errorhandling.Alerts;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public final class VectorDB<T extends JVec> {
@@ -48,9 +54,22 @@ public final class VectorDB<T extends JVec> {
         JVecDataBase = (ArrayList<T>) dataBase.importDataBase(fileName);
     }
 
-    public void importVectorDataFromFile() {
-
+    public void importVectorDataFromFile(String fileName) {
+        try {
+            InputStream is = new FileInputStream(fileName);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, JVecDB.CHARSET));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] words = line.trim().split("\\s+");
+                for (String word : words) {
+                    JVecDB.addDBEntry(word);
+                }
+            }
+        } catch (IOException e) {
+            Alerts.displayErrorMessage("Couldn't import file");
+        }
     }
+
 
     public ArrayList<T> getVectorDataBase() {
         return JVecDataBase;
