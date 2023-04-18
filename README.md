@@ -1,4 +1,4 @@
-### JVecDB - A simple Java Vector DataBase implementation
+### JVecDB
 
 
 #### Supported datatypes:  
