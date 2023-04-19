@@ -31,7 +31,7 @@ public final class JVecDB {
     public static final Charset CHARSET = StandardCharsets.UTF_8;
     public static final String VERSION = "0.9.1";
     public static final boolean DEBUG = true;
-    public static int WIDTH = 1280, HEIGHT = 960;
+    public static int WIDTH = 1280, HEIGHT = 960, MAX_DISPLAYED_VECTORS = 50_000;
     public static final VectorSpaceFX vectorSpaceFX = new VectorSpaceFX();
     public static final VectorDB vectorDB = new VectorDB();
     public static DataType ACTIVE_DATA_TYPE = DataType.STRING;

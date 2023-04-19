@@ -15,10 +15,10 @@ public class MenuBarJvec extends MenuBar {
 
     public MenuBarJvec() {
         ArrayList<Menu> menus = new ArrayList<>();
-
-        menus.add(createHelpMenu());
-        menus.add(createSettingsMenu());
         menus.add(createFileMenu());
+        menus.add(createSettingsMenu());
+        menus.add(createHelpMenu());
+        menus.add(createAboutMenu());
         getMenus().addAll(menus);
     }
 
@@ -74,7 +74,6 @@ public class MenuBarJvec extends MenuBar {
         });
 
 
-
         MenuItem importDataBase = new MenuItem("Import dataBase from binary");
 
         importDataBase.setOnAction(e -> {
@@ -86,7 +85,7 @@ public class MenuBarJvec extends MenuBar {
             Optional<String> result = inputDialog.showAndWait();
 
 
-            result.ifPresent(filename ->JVecDB.importDataBase(filename+".jvecdb"));
+            result.ifPresent(filename -> JVecDB.importDataBase(filename + ".jvecdb"));
         });
 
         MenuItem importWordsFromFile = new MenuItem("Import words from file");
@@ -102,8 +101,20 @@ public class MenuBarJvec extends MenuBar {
             result.ifPresent(JVecDB::importWordsFromFile);
         });
 
-        menu.getItems().addAll(aboutItem, exportDataBase,importDataBase,importWordsFromFile);
+        menu.getItems().addAll(aboutItem, exportDataBase, importDataBase, importWordsFromFile);
 
         return menu;
+    }
+
+    private Menu createAboutMenu() {
+        Menu helpMenu = new Menu("About");
+        MenuItem aboutItem = new MenuItem("GitHub");
+        aboutItem.setOnAction(e -> System.out.println("About"));
+        helpMenu.getItems().add(aboutItem);
+
+        aboutItem.setOnAction(event -> {
+
+        });
+        return helpMenu;
     }
 }

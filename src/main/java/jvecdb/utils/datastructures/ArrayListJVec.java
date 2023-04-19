@@ -40,7 +40,7 @@ public final class ArrayListJVec<T> implements RandomAccess {
         }
         T removedElement = elements[index];
         System.arraycopy(elements, index + 1, elements, index, size - index - 1);
-        elements[--size] = null; // Allow the removed element to be garbage collected
+        elements[--size] = null;
 
         return removedElement;
     }

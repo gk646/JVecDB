@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="960.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jvecdb.rendering.vectorspace.ui.FXMLController">
+   <right>
+      <SplitPane dividerPositions="0.2085889570552147" prefHeight="960.0" prefWidth="300.0" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER">
+        <items>
+          <AnchorPane disable="true" minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="49.0" visible="false">
+               <children>
+                  <TreeView id="treeView" fx:id="treeView" prefHeight="960.0" prefWidth="300.0" />
+               </children></AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="171.0" />
+        </items>
+      </SplitPane>
+   </right>
+   <left>
+      <SplitPane dividerPositions="0.8657718120805369" prefHeight="960.0" prefWidth="300.0" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <TreeView id="folderBrowser" fx:id="folderBrowser" prefHeight="957.0" prefWidth="300.0" />
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" />
+        </items>
+      </SplitPane>
+   </left>
+</BorderPane>

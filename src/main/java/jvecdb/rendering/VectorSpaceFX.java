@@ -11,6 +11,7 @@
 package jvecdb.rendering;
 
 
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -24,6 +25,9 @@ import jvecdb.rendering.vectorspace.ui.MenuBarJvec;
 import jvecdb.utils.datastructures.datavectors.JVec;
 import jvecdb.utils.errorhandling.Alerts;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
+
+import java.io.IOException;
+import java.util.Objects;
 
 public class VectorSpaceFX {
 
@@ -40,11 +44,13 @@ public class VectorSpaceFX {
 
     private boolean initStage(Stage stage) {
         this.stage = stage;
-
-        BorderPane root = new BorderPane();
-
+        BorderPane root;
+        try {
+            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/main.fxml")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         root.setTop(menuBarJvec);
-
         Group sceneRoot = new Group();
         SubScene subScene = new SubScene(sceneRoot, JVecDB.WIDTH, JVecDB.HEIGHT, true, SceneAntialiasing.BALANCED);
         root.setCenter(subScene);
