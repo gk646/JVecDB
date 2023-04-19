@@ -25,7 +25,6 @@ public final class VectorSpace {
 
     private final Scene mainScene;
 
-
     private final SubScene subScene;
 
     private final Group root;
@@ -38,6 +37,7 @@ public final class VectorSpace {
     int radius = 150, zoomLevel;
     double lastX, lastY, moveAmount = 10, azimuth, elevation;
     float radians = 0;
+
     public VectorSpace(Group root, Scene mainScene, SubScene subScene) {
         this.root = root;
         this.mainScene = mainScene;
@@ -65,10 +65,16 @@ public final class VectorSpace {
 
     public boolean reloadVectorSpace() {
         ArrayList<? extends JVec> tempDataBase = JVecDB.vectorDB.getVectorDataBase();
+
         for (JVec vec : tempDataBase) {
             addShapeToVectorSpace(getShapeFromVector(vec));
+            if (shapes.size() > JVecDB.MAX_DISPLAYED_VECTORS) break;
         }
         return true;
+    }
+
+    public int getVectorCount() {
+        return shapes.size();
     }
 
     public Shape3D getShapeFromVector(JVec vec) {

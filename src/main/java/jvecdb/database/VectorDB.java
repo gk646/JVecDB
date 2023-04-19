@@ -54,7 +54,9 @@ public final class VectorDB<T extends JVec> {
         JVecDataBase = (ArrayList<T>) dataBase.importDataBase(fileName);
     }
 
+
     public void importVectorDataFromFile(String fileName) {
+        JVecDataBase.clear();
         try {
             InputStream is = new FileInputStream(fileName);
             BufferedReader br = new BufferedReader(new InputStreamReader(is, JVecDB.CHARSET));

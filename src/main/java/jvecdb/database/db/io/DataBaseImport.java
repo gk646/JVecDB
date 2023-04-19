@@ -22,6 +22,12 @@ public final class DataBaseImport {
     }
 
     public boolean testForImportFile(String absoluteFilename) {
+        if(absoluteFilename.contains("\\")){
+            if(JVecDB.DEBUG){
+                System.out.println(absoluteFilename);
+            }
+            return true;
+        }
         File directory = new File(DataBase.EXPORT_FOLDER + File.separator + absoluteFilename);
         return directory.exists();
     }
@@ -69,7 +75,11 @@ public final class DataBaseImport {
         byte[] wordBytes;
         float[] vector;
         int wordLength;
-        try (InputStream is = new FileInputStream(DataBase.EXPORT_FOLDER + File.separator + fileName)) {
+        String importString = DataBase.EXPORT_FOLDER + File.separator + fileName;
+        if (fileName.contains(DataBase.EXPORT_FOLDER)) {
+            importString = fileName;
+        }
+        try (InputStream is = new FileInputStream(importString)) {
             DataInputStream dis = new DataInputStream(is);
             String line;
             int counter = 0;

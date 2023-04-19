@@ -21,13 +21,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import jvecdb.JVecDB;
 import jvecdb.rendering.vectorspace.VectorSpace;
+import jvecdb.rendering.vectorspace.ui.FXMLController;
 import jvecdb.rendering.vectorspace.ui.MenuBarJvec;
 import jvecdb.utils.datastructures.datavectors.JVec;
 import jvecdb.utils.errorhandling.Alerts;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class VectorSpaceFX {
 
@@ -45,16 +45,22 @@ public class VectorSpaceFX {
     private boolean initStage(Stage stage) {
         this.stage = stage;
         BorderPane root;
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/main.fxml"));
         try {
-            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/main.fxml")));
+            root = fxmlLoader.load();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        FXMLController myController = fxmlLoader.getController();
+
         root.setTop(menuBarJvec);
         Group sceneRoot = new Group();
         SubScene subScene = new SubScene(sceneRoot, JVecDB.WIDTH, JVecDB.HEIGHT, true, SceneAntialiasing.BALANCED);
-        root.setCenter(subScene);
 
+        // Add the SubScene to the StackPane in the center of the BorderPane
+        myController.stackPaneCenter.getChildren().add(subScene);
+        root.setCenter(myController.stackPaneCenter);
         Scene sceneWithMenu = new Scene(root, JVecDB.WIDTH, JVecDB.HEIGHT);
         this.stage.setScene(sceneWithMenu);
         this.stage.setTitle("JVecDB");
@@ -64,7 +70,6 @@ public class VectorSpaceFX {
         vectorSpace = new VectorSpace(sceneRoot, sceneWithMenu, subScene);
         return true;
     }
-
 
     public boolean addVisualEntry(JVec vec) {
         vectorSpace.addShapeToVectorSpace(vectorSpace.getShapeFromVector(vec));
@@ -78,6 +83,12 @@ public class VectorSpaceFX {
         if (!success) {
             Alerts.displayErrorMessage("Couldn't reload vectorspace with new data!");
         }
+        updateInformationTreeView();
+    }
+
+    public void clear() {
+        vectorSpace.clearVectorSpace();
+        reloadVectorSpaceFX();
     }
 
     public Point3D getCameraPosition() {
@@ -86,5 +97,14 @@ public class VectorSpaceFX {
 
     public static int getScaleFactor() {
         return scaleFactor;
+    }
+
+    private void updateInformationTreeView() {
+        int sizeVisual = vectorSpace.getVectorCount();
+        int sizeLogical = JVecDB.vectorDB.getVectorDataBase().size();
+        if (sizeLogical != sizeVisual) {
+            throw new RuntimeException("Logic amount and visual amount dont match!");
+        }
+        FXMLController.treeItems.get(0).setValue("Entries: " + sizeLogical);
     }
 }

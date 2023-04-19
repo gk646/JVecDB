@@ -29,7 +29,6 @@ public final class DataBaseExport {
         metaData = new HashMap<>();
     }
 
-
     public String exportToXML(ArrayList<JVec_STR> data, String fileName) {
         if (!testForExportFolders()) {
             return "ERROR: No export folder found!";
