@@ -10,7 +10,7 @@
 package jvecdb.database.vectorize;
 
 import jvecdb.utils.datastructures.datavectors.JVec_STR;
-import org.nd4j.common.io.ClassPathResource;
+
 
 import java.io.IOException;
 
@@ -22,7 +22,6 @@ public final class Vectorizer {
     }
 
     private void init() throws IOException {
-        String filePath = new ClassPathResource("raw_sentences.txt").getFile().getAbsolutePath();
         //log.info("Load & Vectorize Sentences....");
         // Strip white space before and after for each line
         //SentenceIterator iter = new BasicLineIterator(filePath);

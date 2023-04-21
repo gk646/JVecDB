@@ -25,8 +25,8 @@ import java.nio.charset.StandardCharsets;
 
 public final class JVecDB {
     public static final Charset CHARSET = StandardCharsets.UTF_8;
-    public static final String VERSION = "0.9.2";
-    public static final boolean DEBUG = true;
+    public static final String VERSION = "1.0";
+    public static final boolean DEBUG = false;
     public static int WIDTH = 1280, HEIGHT = 960, MAX_DISPLAYED_VECTORS = 50_000;
     public static final VectorSpaceFX vectorSpaceFX = new VectorSpaceFX();
     public static final VectorDB vectorDB = new VectorDB();

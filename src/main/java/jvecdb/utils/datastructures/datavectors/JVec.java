@@ -1,7 +1,5 @@
 package jvecdb.utils.datastructures.datavectors;
 
-import org.apache.commons.math3.exception.MathArithmeticException;
-
 import java.util.Arrays;
 
 abstract public class JVec {
@@ -47,7 +45,7 @@ abstract public class JVec {
     }
 
     public static float dotProduct(JVec vec1, JVec vec2) {
-        if (vec1.getLength() != vec2.getLength()) throw new MathArithmeticException();
+        if (vec1.getLength() != vec2.getLength()) throw new NumberFormatException("Given vector length is not the same");
         int len = vec1.getLength();
         float result = 0;
         for (int i = 0; i < len; i++) {
