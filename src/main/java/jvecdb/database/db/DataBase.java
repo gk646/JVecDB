@@ -55,7 +55,7 @@ public class DataBase {
         triggerAlerts(saveMessage);
     }
 
-    public ArrayList<JVec_STR> importDataBase(String fileName) {
+    public ArrayList<? extends JVec> importDataBase(String fileName) {
         if (fileName.contains(".jvecdb")) {
             isValidImportPath(fileName);
             return dbImport.importMixedFormat(fileName, VECTOR_LENGTH_STRING);

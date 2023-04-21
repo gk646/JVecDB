@@ -13,12 +13,12 @@ package jvecdb.utils.datastructures;
 import java.util.Arrays;
 import java.util.RandomAccess;
 
-public final class ArrayListJVec<T> implements RandomAccess {
+public final class std_vector<T> implements RandomAccess {
     private int size = 0;
     private T[] elements;
 
 
-    ArrayListJVec(int initialCapacity) {
+    std_vector(int initialCapacity) {
         size = initialCapacity;
         elements = (T[]) new Object[initialCapacity];
     }

@@ -18,7 +18,7 @@ public final class Launcher extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-        JVecDB JVecDB = new JVecDB(primaryStage);
+        JVecDB.init(primaryStage);
     }
 
     public static void main(String[] args) {

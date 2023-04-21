@@ -33,7 +33,7 @@ public final class JVecDB {
     public static DataType ACTIVE_DATA_TYPE = DataType.STRING;
     public static VectorShape ACTIVE_SHAPE = VectorShape.BOX;
 
-    public JVecDB(Stage stage) {
+    public static void init(Stage stage){
         try {
             if (!vectorSpaceFX.init(stage)) {
                 throw new RuntimeException("Failed to startup!");
@@ -45,7 +45,6 @@ public final class JVecDB {
             throw new StartupFailure(e.toString());
         }
     }
-
 
     public static <T> void addDBEntry(T entry) {
         switch (ACTIVE_DATA_TYPE) {

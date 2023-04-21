@@ -18,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.shape.Shape3D;
 import javafx.stage.Stage;
 import jvecdb.JVecDB;
 import jvecdb.rendering.vectorspace.VectorSpace;
@@ -28,6 +29,8 @@ import jvecdb.utils.errorhandling.Alerts;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class VectorSpaceFX {
 
@@ -37,9 +40,8 @@ public class VectorSpaceFX {
 
     static int scaleFactor = 5;
 
-
     public boolean init(Stage stage) throws StartupFailure {
-        return initStage(stage);
+        return initStage(stage) & initVectorSpaceThread();
     }
 
     private boolean initStage(Stage stage) {
@@ -67,29 +69,52 @@ public class VectorSpaceFX {
 
         stage.show();
         subScene.requestFocus();
-        vectorSpace = new VectorSpace(sceneRoot, sceneWithMenu, subScene);
+        vectorSpace = new VectorSpace(root,sceneRoot, sceneWithMenu, subScene);
         return true;
     }
 
+    private boolean initVectorSpaceThread() {
+        Thread thread = new Thread(() -> {
+            try {
+                while (true) {
+                    vectorSpace.keyBoardMovement();
+                    Thread.sleep(16);
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        thread.start();
+        return thread.isAlive();
+    }
+
     public boolean addVisualEntry(JVec vec) {
-        vectorSpace.addShapeToVectorSpace(vectorSpace.getShapeFromVector(vec));
+        vectorSpace.addListToVectorSpace(Collections.singletonList(vectorSpace.getShapeFromVector(vec)));
         return true;
+    }
+
+    public void addVisualEntryList(ArrayList<? extends JVec> addList) {
+        ArrayList<Shape3D> shapeList = new ArrayList<>();
+        for (JVec vec : addList) {
+            shapeList.add(vectorSpace.getShapeFromVector(vec));
+        }
+        vectorSpace.addListToVectorSpace(shapeList);
     }
 
     public void reloadVectorSpaceFX() {
         vectorSpace.clearVectorSpace();
-        boolean success;
-        success = vectorSpace.reloadVectorSpace();
-        if (!success) {
-            Alerts.displayErrorMessage("Couldn't reload vectorspace with new data!");
-        }
+        new Thread(()->{
+            try {
+                if (!vectorSpace.reloadVectorSpace()) {
+                    Alerts.displayErrorMessage("Couldn't reload vectorspace with new data!");
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
         updateInformationTreeView();
     }
 
-    public void clear() {
-        vectorSpace.clearVectorSpace();
-        reloadVectorSpaceFX();
-    }
 
     public Point3D getCameraPosition() {
         return vectorSpace.getCameraPosition();
@@ -100,11 +125,6 @@ public class VectorSpaceFX {
     }
 
     private void updateInformationTreeView() {
-        int sizeVisual = vectorSpace.getVectorCount();
-        int sizeLogical = JVecDB.vectorDB.getVectorDataBase().size();
-        if (sizeLogical != sizeVisual) {
-            throw new RuntimeException("Logic amount and visual amount dont match!");
-        }
-        FXMLController.treeItems.get(0).setValue("Entries: " + sizeLogical);
+        FXMLController.treeItems.get(0).setValue("Entries: " + JVecDB.vectorDB.getVectorDataBase().size());
     }
 }

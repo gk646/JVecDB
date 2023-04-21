@@ -47,7 +47,7 @@ public final class VectorDB<T extends JVec> {
 
 
     public void exportDataBase(String fileName, ExportType exportType) {
-        dataBase.exportDataBase(JVecDataBase, fileName, exportType);
+        new Thread(() -> dataBase.exportDataBase(JVecDataBase, fileName, exportType)).start();
     }
 
     public void importDataBase(String fileName) {
@@ -64,16 +64,17 @@ public final class VectorDB<T extends JVec> {
             while ((line = br.readLine()) != null) {
                 String[] words = line.trim().split("\\s+");
                 for (String word : words) {
-                    JVecDB.addDBEntry(word);
+                    JVecDataBase.add((T) vectorizer.StringSimple(word));
                 }
             }
+            JVecDB.vectorSpaceFX.addVisualEntryList(JVecDataBase);
         } catch (IOException e) {
             Alerts.displayErrorMessage("Couldn't import file");
         }
     }
 
 
-    public ArrayList<T> getVectorDataBase() {
+    public ArrayList<? extends JVec> getVectorDataBase() {
         return JVecDataBase;
     }
 }

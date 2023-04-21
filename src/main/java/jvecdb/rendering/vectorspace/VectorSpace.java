@@ -1,11 +1,14 @@
 package jvecdb.rendering.vectorspace;
 
+import javafx.application.Platform;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SubScene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape3D;
 import javafx.scene.transform.Rotate;
@@ -16,20 +19,26 @@ import jvecdb.rendering.vectorspace.vectorshapes.VecBox;
 import jvecdb.utils.MathJVec;
 import jvecdb.utils.datastructures.datavectors.JVec;
 import jvecdb.utils.datastructures.datavectors.JVec_STR;
+import jvecdb.utils.datastructures.glm_vec3;
 import jvecdb.utils.errorhandling.Alerts;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class VectorSpace {
 
     private final Scene mainScene;
 
     private final SubScene subScene;
-
+    private final BorderPane layoutRoot;
     private final Group root;
     private final ArrayList<Shape3D> shapes = new ArrayList<>();
-
+    private final Set<KeyCode> keyPresses = new HashSet<>();
     private PerspectiveCamera camera;
     Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
     Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
@@ -38,8 +47,9 @@ public final class VectorSpace {
     double lastX, lastY, moveAmount = 10, azimuth, elevation;
     float radians = 0;
 
-    public VectorSpace(Group root, Scene mainScene, SubScene subScene) {
+    public VectorSpace(BorderPane layoutRoot, Group root, Scene mainScene, SubScene subScene) {
         this.root = root;
+        this.layoutRoot = layoutRoot;
         this.mainScene = mainScene;
         this.subScene = subScene;
         initOrigin();
@@ -47,15 +57,9 @@ public final class VectorSpace {
         initControls();
     }
 
-    public void addShapeToVectorSpace(Point3D bounds, Point3D position, Color color, JVec vector) {
-        VecBox box = new VecBox(bounds, position, color, vector);
-        root.getChildren().add(box);
-        shapes.add(box);
-    }
-
-    public void addShapeToVectorSpace(Shape3D shape) {
-        root.getChildren().add(shape);
-        shapes.add(shape);
+    public void addListToVectorSpace(List<Shape3D> shape) {
+        root.getChildren().addAll(shape);
+        shapes.addAll(shape);
     }
 
     public void clearVectorSpace() {
@@ -63,19 +67,32 @@ public final class VectorSpace {
         root.getChildren().clear();
     }
 
-    public boolean reloadVectorSpace() {
-        ArrayList<? extends JVec> tempDataBase = JVecDB.vectorDB.getVectorDataBase();
-
-        for (JVec vec : tempDataBase) {
-            addShapeToVectorSpace(getShapeFromVector(vec));
-            if (shapes.size() > JVecDB.MAX_DISPLAYED_VECTORS) break;
-        }
+    public boolean reloadVectorSpace() throws InterruptedException {
+        int listSize = JVecDB.vectorDB.getVectorDataBase().size();
+        List<Shape3D> addList = Collections.synchronizedList(new ArrayList<>());
+        final List<? extends JVec> firstHalf = JVecDB.vectorDB.getVectorDataBase().subList(0, listSize / 2);
+        final List<? extends JVec> secondHalf = JVecDB.vectorDB.getVectorDataBase().subList(listSize / 2, listSize);
+        if (shapes.size() > JVecDB.MAX_DISPLAYED_VECTORS) return true;
+        AtomicInteger atomicInteger = new AtomicInteger(shapes.size());
+        Thread thread = new Thread(() -> {
+            for (JVec vec : firstHalf) {
+                if (atomicInteger.compareAndSet(JVecDB.MAX_DISPLAYED_VECTORS, atomicInteger.incrementAndGet())) break;
+                addList.add(getShapeFromVector(vec));
+            }
+        });
+        thread.start();
+        Thread thread1 = new Thread(() -> {
+            for (JVec vec : secondHalf) {
+                if (atomicInteger.compareAndSet(JVecDB.MAX_DISPLAYED_VECTORS, atomicInteger.incrementAndGet())) break;
+                addList.add(getShapeFromVector(vec));
+            }
+        });
+        thread.join();
+        thread1.join();
+        Platform.runLater(() -> addListToVectorSpace(addList));
         return true;
     }
 
-    public int getVectorCount() {
-        return shapes.size();
-    }
 
     public Shape3D getShapeFromVector(JVec vec) {
         Shape3D shape = null;
@@ -97,12 +114,14 @@ public final class VectorSpace {
         double radius = vec_str.getWorldLength() * VectorSpaceFX.getScaleFactor();
         double maxLetterValue = 150;
 
-        Point3D position = MathJVec.mapLetterValueToSphereSurface(vec_str.getLetterSum(), maxLetterValue, radius);
+        glm_vec3 position = MathJVec.mapLetterValueToSphereSurface(vec_str.getLetterSum(), maxLetterValue, radius);
         return new VecBox(new Point3D(5, 5, 5), position, Color.BLUE);
     }
 
     private void initOrigin() {
-        addShapeToVectorSpace(new Point3D(5, 5, 5), new Point3D(0, 0, 0), Color.RED, JVec_STR.ZERO());
+        VecBox box = new VecBox(new Point3D(5, 5, 5), new glm_vec3(0, 0, 0), Color.RED, JVec_STR.ZERO());
+        root.getChildren().add(box);
+        shapes.add(box);
     }
 
     private void initCamera() {
@@ -124,8 +143,8 @@ public final class VectorSpace {
         });
         mainScene.setOnMouseDragged(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
-                double dx = lastX - event.getSceneX();
-                double dy = lastY - event.getSceneY();
+                double dx = (lastX - event.getSceneX()) / 3;
+                double dy = (lastY - event.getSceneY()) / 3;
                 double newRotateY = (rotateY.getAngle() + dx) % 360;
                 double newRotateX = rotateX.getAngle() - dy;
                 newRotateX = Math.max(Math.min(newRotateX, 45), -45);
@@ -203,20 +222,25 @@ public final class VectorSpace {
                 System.out.println("Translation: " + camera.getTranslateX() + " " + camera.getTranslateY() + " " + camera.getTranslateZ());
             }
         });
-        mainScene.setOnKeyPressed(event -> {
-            double cameraYaw = Math.toRadians(rotateY.getAngle()); //side
-            double cameraPitch = Math.toRadians(rotateX.getAngle());
-            double yaw2 = cameraYaw % Math.PI * 2;
-            Point2D.Double forwardVector = new Point2D.Double(Math.sin(yaw2), Math.cos(yaw2));
-            double length = Math.sqrt(forwardVector.x * forwardVector.x + forwardVector.y * forwardVector.y);
-            Point2D.Double normalized = new Point2D.Double(forwardVector.x / length, forwardVector.y / length);
+        layoutRoot.setOnKeyPressed(event -> {
+            keyPresses.add(event.getCode());
+        });
+        layoutRoot.setOnKeyReleased(event -> keyPresses.remove(event.getCode()));
+    }
+
+    public void keyBoardMovement() {
+        double cameraYaw = Math.toRadians(rotateY.getAngle()); //side
+        double yaw2 = cameraYaw % Math.PI * 2;
+        Point2D.Double forwardVector = new Point2D.Double(Math.sin(yaw2), Math.cos(yaw2));
+        double length = Math.sqrt(forwardVector.x * forwardVector.x + forwardVector.y * forwardVector.y);
+        Point2D.Double normalized = new Point2D.Double(forwardVector.x / length, forwardVector.y / length);
 
 
-            Point2D.Double sideDir = new Point2D.Double(forwardVector.y, -forwardVector.x);
-            length = Math.sqrt(sideDir.x * sideDir.x + sideDir.y * sideDir.y);
-            Point2D.Double normalizedside = new Point2D.Double(sideDir.x / length, sideDir.y / length);
-
-            switch (event.getCode()) {
+        Point2D.Double sideDir = new Point2D.Double(forwardVector.y, -forwardVector.x);
+        length = Math.sqrt(sideDir.x * sideDir.x + sideDir.y * sideDir.y);
+        Point2D.Double normalizedside = new Point2D.Double(sideDir.x / length, sideDir.y / length);
+        for (KeyCode code : keyPresses) {
+            switch (code) {
                 case W -> { // Move forward
                     camera.setTranslateX(camera.getTranslateX() - normalized.x);
                     camera.setTranslateZ(camera.getTranslateZ() + normalized.y);
@@ -233,8 +257,13 @@ public final class VectorSpace {
                     camera.setTranslateX(camera.getTranslateX() + normalizedside.x);
                     camera.setTranslateZ(camera.getTranslateZ() - normalizedside.y);
                 }
+                case SPACE -> {
+                    camera.setTranslateY(camera.getTranslateY() - 0.4);
+                    layoutRoot.requestLayout();
+                }
+                case CONTROL -> camera.setTranslateY(camera.getTranslateY() + 0.4);
             }
-        });
+        }
     }
 
     public Point3D getCameraPosition() {

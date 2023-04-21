@@ -26,10 +26,5 @@ public class Alerts {
         information.setContentText("Successfully saved " + messages[0] + " in " + DataBase.EXPORT_FOLDER);
         information.showAndWait();
     }
-/*
-    Timeline timeline = new Timeline(new KeyFrame(Duration.millis(1500), event -> information.close()));
-        timeline.setCycleCount(1);
-        timeline.play();
 
- */
 }
