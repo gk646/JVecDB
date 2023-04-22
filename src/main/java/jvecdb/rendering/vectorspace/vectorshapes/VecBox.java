@@ -11,15 +11,15 @@ public final class VecBox extends Box {
 
     private JVec vector;
 
-    public VecBox(Point3D bounds, glm_vec3 position, Color color) {
-        super(bounds.getX(), bounds.getX(), bounds.getZ());
+    public VecBox(glm_vec3 bounds, glm_vec3 position, Color color) {
+        super(bounds.x, bounds.y, bounds.z);
         setTranslateX(position.x);
         setTranslateY(position.y);
         setTranslateZ(position.z);
         setMaterial(new PhongMaterial(color));
     }
 
-    public VecBox(Point3D bounds, glm_vec3 position, Color color, JVec vector) {
+    public VecBox(glm_vec3 bounds, glm_vec3 position, Color color, JVec vector) {
         this(bounds, position, color);
         this.vector = vector;
     }

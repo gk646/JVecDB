@@ -25,11 +25,11 @@ import jvecdb.rendering.vectorspace.VectorSpace;
 import jvecdb.rendering.vectorspace.ui.FXMLController;
 import jvecdb.rendering.vectorspace.ui.MenuBarJvec;
 import jvecdb.utils.datastructures.datavectors.JVec;
+import jvecdb.utils.datastructures.std_vector;
 import jvecdb.utils.errorhandling.Alerts;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 
 public class VectorSpaceFX {
@@ -46,6 +46,7 @@ public class VectorSpaceFX {
 
     private boolean initStage(Stage stage) {
         this.stage = stage;
+        stage.setOnCloseRequest(windowEvent -> System.exit(1));
         BorderPane root;
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/main.fxml"));
         try {
@@ -69,7 +70,7 @@ public class VectorSpaceFX {
 
         stage.show();
         subScene.requestFocus();
-        vectorSpace = new VectorSpace(root,sceneRoot, sceneWithMenu, subScene);
+        vectorSpace = new VectorSpace(root, sceneRoot, sceneWithMenu, subScene);
         return true;
     }
 
@@ -93,8 +94,8 @@ public class VectorSpaceFX {
         return true;
     }
 
-    public void addVisualEntryList(ArrayList<? extends JVec> addList) {
-        ArrayList<Shape3D> shapeList = new ArrayList<>();
+    public void addVisualEntryList(std_vector<? extends JVec> addList) {
+        std_vector<Shape3D> shapeList = new std_vector<>();
         for (JVec vec : addList) {
             shapeList.add(vectorSpace.getShapeFromVector(vec));
         }
@@ -103,15 +104,14 @@ public class VectorSpaceFX {
 
     public void reloadVectorSpaceFX() {
         vectorSpace.clearVectorSpace();
-        new Thread(()->{
-            try {
-                if (!vectorSpace.reloadVectorSpace()) {
-                    Alerts.displayErrorMessage("Couldn't reload vectorspace with new data!");
-                }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        try {
+            if (!vectorSpace.reloadVectorSpace()) {
+                Alerts.displayErrorMessage("Couldn't reload vectorspace with new data!");
             }
-        }).start();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         updateInformationTreeView();
     }
 

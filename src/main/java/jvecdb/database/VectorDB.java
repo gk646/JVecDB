@@ -15,6 +15,7 @@ import jvecdb.database.db.DataBase;
 import jvecdb.database.vectorize.Vectorizer;
 import jvecdb.utils.datastructures.datavectors.JVec;
 import jvecdb.utils.datastructures.datavectors.JVec_STR;
+import jvecdb.utils.datastructures.std_vector;
 import jvecdb.utils.enums.ExportType;
 import jvecdb.utils.errorhandling.Alerts;
 
@@ -23,13 +24,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 public final class VectorDB<T extends JVec> {
     public static boolean IMPORTED_FLAG = false;
     DataBase dataBase;
     Vectorizer vectorizer;
-    ArrayList<T> JVecDataBase = new ArrayList<>();
+    std_vector<T> jVecDataBase = new std_vector<>();
 
 
     public boolean init() throws IOException {
@@ -41,22 +41,22 @@ public final class VectorDB<T extends JVec> {
 
     public JVec addStringToDB(String inputString) {
         JVec_STR vec = vectorizer.StringSimple(inputString);
-        JVecDataBase.add((T) vec);
+        jVecDataBase.add((T) vec);
         return vec;
     }
 
 
     public void exportDataBase(String fileName, ExportType exportType) {
-        new Thread(() -> dataBase.exportDataBase(JVecDataBase, fileName, exportType)).start();
+        new Thread(() -> dataBase.exportDataBase(jVecDataBase, fileName, exportType)).start();
     }
 
     public void importDataBase(String fileName) {
-        JVecDataBase = (ArrayList<T>) dataBase.importDataBase(fileName);
+        jVecDataBase = (std_vector<T>) dataBase.importDataBase(fileName);
     }
 
 
     public void importVectorDataFromFile(String fileName) {
-        JVecDataBase.clear();
+        jVecDataBase.clear();
         try {
             InputStream is = new FileInputStream(fileName);
             BufferedReader br = new BufferedReader(new InputStreamReader(is, JVecDB.CHARSET));
@@ -64,17 +64,17 @@ public final class VectorDB<T extends JVec> {
             while ((line = br.readLine()) != null) {
                 String[] words = line.trim().split("\\s+");
                 for (String word : words) {
-                    JVecDataBase.add((T) vectorizer.StringSimple(word));
+                    jVecDataBase.add((T) vectorizer.StringSimple(word));
                 }
             }
-            JVecDB.vectorSpaceFX.addVisualEntryList(JVecDataBase);
+            JVecDB.vectorSpaceFX.addVisualEntryList(jVecDataBase);
         } catch (IOException e) {
             Alerts.displayErrorMessage("Couldn't import file");
         }
     }
 
 
-    public ArrayList<? extends JVec> getVectorDataBase() {
-        return JVecDataBase;
+    public std_vector<? extends JVec> getVectorDataBase() {
+        return jVecDataBase;
     }
 }

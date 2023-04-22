@@ -4,6 +4,7 @@ import javafx.geometry.Point3D;
 import jvecdb.JVecDB;
 import jvecdb.database.db.DataBase;
 import jvecdb.utils.datastructures.datavectors.JVec_STR;
+import jvecdb.utils.datastructures.std_vector;
 import jvecdb.utils.enums.ExportType;
 
 import java.io.BufferedWriter;
@@ -70,7 +71,7 @@ public final class DataBaseExport {
         return isExportFolder;
     }
 
-    public String exportMixedFormat(ArrayList<JVec_STR> data, String fileName, ExportType exportType) {
+    public String exportMixedFormat(std_vector<JVec_STR> data, String fileName, ExportType exportType) {
         long time;
         if (JVecDB.DEBUG) {
             time = System.nanoTime();

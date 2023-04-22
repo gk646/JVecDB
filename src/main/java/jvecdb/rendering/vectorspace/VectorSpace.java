@@ -63,8 +63,10 @@ public final class VectorSpace {
     }
 
     public void clearVectorSpace() {
-        shapes.clear();
-        root.getChildren().clear();
+        Platform.runLater(()->{
+            shapes.clear();
+            root.getChildren().clear();
+        });
     }
 
     public boolean reloadVectorSpace() throws InterruptedException {
@@ -109,17 +111,17 @@ public final class VectorSpace {
         return shape;
     }
 
-    private Shape3D getShapeStringBOX(JVec vec) {
+    private VecBox getShapeStringBOX(JVec vec) {
         JVec_STR vec_str = (JVec_STR) vec;
         double radius = vec_str.getWorldLength() * VectorSpaceFX.getScaleFactor();
         double maxLetterValue = 150;
 
         glm_vec3 position = MathJVec.mapLetterValueToSphereSurface(vec_str.getLetterSum(), maxLetterValue, radius);
-        return new VecBox(new Point3D(5, 5, 5), position, Color.BLUE);
+        return new VecBox(new glm_vec3(5, 5, 5), position, Color.BLUE);
     }
 
     private void initOrigin() {
-        VecBox box = new VecBox(new Point3D(5, 5, 5), new glm_vec3(0, 0, 0), Color.RED, JVec_STR.ZERO());
+        VecBox box = new VecBox(new glm_vec3(5, 5, 5), new glm_vec3(0, 0, 0), Color.RED, JVec_STR.ZERO());
         root.getChildren().add(box);
         shapes.add(box);
     }

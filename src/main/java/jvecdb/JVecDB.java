@@ -26,14 +26,14 @@ import java.nio.charset.StandardCharsets;
 public final class JVecDB {
     public static final Charset CHARSET = StandardCharsets.UTF_8;
     public static final String VERSION = "1.0";
-    public static final boolean DEBUG = false;
-    public static int WIDTH = 1280, HEIGHT = 960, MAX_DISPLAYED_VECTORS = 50_000;
+    public static final boolean DEBUG = true;
+    public static int WIDTH = 1280, HEIGHT = 960, MAX_DISPLAYED_VECTORS = 25_000;
     public static final VectorSpaceFX vectorSpaceFX = new VectorSpaceFX();
     public static final VectorDB vectorDB = new VectorDB();
     public static DataType ACTIVE_DATA_TYPE = DataType.STRING;
     public static VectorShape ACTIVE_SHAPE = VectorShape.BOX;
 
-    public static void init(Stage stage){
+    public static void init(Stage stage) {
         try {
             if (!vectorSpaceFX.init(stage)) {
                 throw new RuntimeException("Failed to startup!");
@@ -63,8 +63,10 @@ public final class JVecDB {
     }
 
     public static void importDataBase(String fileName) {
-        vectorDB.importDataBase(fileName);
-        vectorSpaceFX.reloadVectorSpaceFX();
+        new Thread(() -> {
+            vectorDB.importDataBase(fileName);
+            vectorSpaceFX.reloadVectorSpaceFX();
+        }).start();
     }
 
 

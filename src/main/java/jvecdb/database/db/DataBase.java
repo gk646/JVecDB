@@ -16,6 +16,7 @@ import jvecdb.database.db.io.DataBaseExport;
 import jvecdb.database.db.io.DataBaseImport;
 import jvecdb.utils.datastructures.datavectors.JVec;
 import jvecdb.utils.datastructures.datavectors.JVec_STR;
+import jvecdb.utils.datastructures.std_vector;
 import jvecdb.utils.enums.ExportType;
 import jvecdb.utils.errorhandling.Alerts;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
@@ -43,19 +44,17 @@ public class DataBase {
         }
     }
 
-    public <T extends JVec> void exportDataBase(ArrayList<T> dataBase, String fileName, ExportType exportType) {
+    public <T extends JVec> void exportDataBase(std_vector<T> dataBase, String fileName, ExportType exportType) {
         String saveMessage = "ERROR: Couldn't export database to file";
         switch (JVecDB.ACTIVE_DATA_TYPE) {
-            case STRING -> saveMessage = dbExport.exportMixedFormat((ArrayList<JVec_STR>) dataBase, fileName, exportType);
-            case IMAGE -> {
-            }
-            case SOUND -> {
-            }
+            case STRING -> saveMessage = dbExport.exportMixedFormat((std_vector<JVec_STR>) dataBase, fileName, exportType);
+            case IMAGE -> {}
+            case SOUND -> {}
         }
         triggerAlerts(saveMessage);
     }
 
-    public ArrayList<? extends JVec> importDataBase(String fileName) {
+    public std_vector<? extends JVec> importDataBase(String fileName) {
         if (fileName.contains(".jvecdb")) {
             isValidImportPath(fileName);
             return dbImport.importMixedFormat(fileName, VECTOR_LENGTH_STRING);

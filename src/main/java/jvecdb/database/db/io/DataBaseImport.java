@@ -3,6 +3,7 @@ package jvecdb.database.db.io;
 import jvecdb.JVecDB;
 import jvecdb.database.db.DataBase;
 import jvecdb.utils.datastructures.datavectors.JVec_STR;
+import jvecdb.utils.datastructures.std_vector;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -22,8 +23,8 @@ public final class DataBaseImport {
     }
 
     public boolean testForImportFile(String absoluteFilename) {
-        if(absoluteFilename.contains("\\")){
-            if(JVecDB.DEBUG){
+        if (absoluteFilename.contains("\\")) {
+            if (JVecDB.DEBUG) {
                 System.out.println(absoluteFilename);
             }
             return true;
@@ -66,12 +67,12 @@ public final class DataBaseImport {
     }
 
 
-    public ArrayList<JVec_STR> importMixedFormat(String fileName, int VECTOR_LENGTH) {
+    public std_vector<JVec_STR> importMixedFormat(String fileName, int VECTOR_LENGTH) {
         long time;
         if (JVecDB.DEBUG) {
             time = System.nanoTime();
         }
-        ArrayList<JVec_STR> data = new ArrayList<>();
+        std_vector<JVec_STR> data = new std_vector<>();
         byte[] wordBytes;
         float[] vector;
         int wordLength;
@@ -90,26 +91,14 @@ public final class DataBaseImport {
                     break;
                 }
             }
-            while (true) {
-                wordLength = dis.readUnsignedByte();
-                wordBytes = new byte[wordLength];
-                dis.readFully(wordBytes);
-
-                vector = new float[VECTOR_LENGTH];
-                for (int i = 0; i < VECTOR_LENGTH; i++) {
-                    vector[i] = dis.readFloat();
-                }
-                JVec_STR vec = new JVec_STR(wordBytes, vector);
-                data.add(vec);
-                if (dis.available() == 0) {
-                    break;
-                }
+            while (dis.available() != 0) {
+                data.add(new JVec_STR(dis.readNBytes(dis.readUnsignedByte()), new float[]{dis.readFloat(), dis.readFloat()}));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         if (JVecDB.DEBUG) {
-            System.out.println("Imported " + data.size() + " entries in: " + (System.nanoTime() - time) / 10000);
+            System.out.println("I/O of " + data.size() + " entries took: " + (System.nanoTime() - time) / 1000 + " microseconds");
         }
         return data;
     }
