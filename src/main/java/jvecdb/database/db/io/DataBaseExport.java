@@ -121,8 +121,8 @@ public final class DataBaseExport {
         metaData.put(index++, new String[]{"filename", fileName});
         metaData.put(index++, new String[]{"savemode", exportType.toString()});
         metaData.put(index++, new String[]{"entries", String.valueOf(entries)});
-        metaData.put(index++, new String[]{"datatype", JVecDB.ACTIVE_DATA_TYPE.toString()});
-        metaData.put(index++, new String[]{"shape", JVecDB.ACTIVE_SHAPE.toString()});
+        metaData.put(index++, new String[]{"datatype", JVecDB.getActiveDataType().toString()});
+        metaData.put(index++, new String[]{"shape", JVecDB.getActiveShape().toString()});
         metaData.put(index++, new String[]{"x", String.valueOf(position.getX())});
         metaData.put(index++, new String[]{"y", String.valueOf(position.getY())});
         metaData.put(index++, new String[]{"z", String.valueOf(position.getZ())});

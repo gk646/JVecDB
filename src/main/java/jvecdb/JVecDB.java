@@ -13,6 +13,7 @@ package jvecdb;
 import javafx.stage.Stage;
 import jvecdb.database.VectorDB;
 import jvecdb.rendering.VectorSpaceFX;
+import jvecdb.utils.datastructures.datavectors.JVec;
 import jvecdb.utils.enums.DataType;
 import jvecdb.utils.enums.ExportType;
 import jvecdb.utils.enums.VectorShape;
@@ -24,28 +25,37 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public final class JVecDB {
+
     public static final Charset CHARSET = StandardCharsets.UTF_8;
     public static final String VERSION = "1.0";
     public static final boolean DEBUG = true;
-    public static int WIDTH = 1280, HEIGHT = 960, MAX_DISPLAYED_VECTORS = 25_000;
+    public static final int WIDTH = 1280, HEIGHT = 960, MAX_DISPLAYED_VECTORS = 25_000;
     public static final VectorSpaceFX vectorSpaceFX = new VectorSpaceFX();
-    public static final VectorDB vectorDB = new VectorDB();
-    public static DataType ACTIVE_DATA_TYPE = DataType.STRING;
-    public static VectorShape ACTIVE_SHAPE = VectorShape.BOX;
+    public static final VectorDB<? extends JVec> vectorDB = new VectorDB<>();
+    private static DataType ACTIVE_DATA_TYPE = DataType.STRING;
+    private static VectorShape ACTIVE_SHAPE = VectorShape.BOX;
+
+    private JVecDB() {}
 
     public static void init(Stage stage) {
         try {
             if (!vectorSpaceFX.init(stage)) {
-                throw new RuntimeException("Failed to startup!");
+                throw new StartupFailure("Failed to startup!");
             }
             if (!vectorDB.init()) {
-                throw new RuntimeException("Failed to startup!");
+                throw new StartupFailure("Failed to startup!");
             }
         } catch (IOException e) {
             throw new StartupFailure(e.toString());
         }
     }
+    public static DataType getActiveDataType() {
+        return ACTIVE_DATA_TYPE;
+    }
 
+    public static VectorShape getActiveShape() {
+        return ACTIVE_SHAPE;
+    }
     public static <T> void addDBEntry(T entry) {
         switch (ACTIVE_DATA_TYPE) {
             case STRING -> {
@@ -74,4 +84,6 @@ public final class JVecDB {
         vectorDB.importVectorDataFromFile(fileName);
         vectorSpaceFX.reloadVectorSpaceFX();
     }
+
+
 }

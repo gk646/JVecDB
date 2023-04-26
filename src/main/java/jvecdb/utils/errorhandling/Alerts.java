@@ -22,7 +22,7 @@ public class Alerts {
     public static void displayInformationDataBaseExport(String[] messages) {
         information = new Alert(AlertType.INFORMATION);
         information.setTitle("Success!");
-        information.setHeaderText("Successfully saved " + messages[1] + " entries with datatype " + JVecDB.ACTIVE_DATA_TYPE.toString());
+        information.setHeaderText("Successfully saved " + messages[1] + " entries with datatype " + JVecDB.getActiveDataType().toString());
         information.setContentText("Successfully saved " + messages[0] + " in " + DataBase.EXPORT_FOLDER);
         information.showAndWait();
     }

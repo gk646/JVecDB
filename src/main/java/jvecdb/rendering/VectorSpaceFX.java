@@ -61,12 +61,15 @@ public class VectorSpaceFX {
         Group sceneRoot = new Group();
         SubScene subScene = new SubScene(sceneRoot, JVecDB.WIDTH, JVecDB.HEIGHT, true, SceneAntialiasing.BALANCED);
 
-        // Add the SubScene to the StackPane in the center of the BorderPane
+
         myController.stackPaneCenter.getChildren().add(subScene);
         root.setCenter(myController.stackPaneCenter);
         Scene sceneWithMenu = new Scene(root, JVecDB.WIDTH, JVecDB.HEIGHT);
         this.stage.setScene(sceneWithMenu);
         this.stage.setTitle("JVecDB");
+
+
+        root.setOnMouseMoved(event -> myController.updateFileBrowser());
 
         stage.show();
         subScene.requestFocus();

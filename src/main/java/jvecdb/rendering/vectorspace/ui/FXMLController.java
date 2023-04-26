@@ -20,13 +20,11 @@ import jvecdb.JVecDB;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FXMLController {
-
-    public FXMLController() {
-    }
-
-    public static ArrayList<TreeItem<String>> treeItems = new ArrayList<>();
+    private boolean folderBrowserUpdated;
+    public static List<TreeItem<String>> treeItems = new ArrayList<>();
     @FXML
     public TreeView<String> treeView;
     @FXML
@@ -47,18 +45,18 @@ public class FXMLController {
         TreeItem<String> childItem1 = new TreeItem<>("DataBase Info");
 
         TreeItem<String> entries = new TreeItem<>("Entries: " + JVecDB.vectorDB.getVectorDataBase().size());
-        TreeItem<String> dataType = new TreeItem<>("DataType: " + JVecDB.ACTIVE_DATA_TYPE.toString());
+        TreeItem<String> dataType = new TreeItem<>("DataType: " + JVecDB.getActiveDataType().toString());
         childItem1.getChildren().addAll(entries);
 
         TreeItem<String> childItem3 = new TreeItem<>("Position");
 
         rootItem.getChildren().addAll(childItem1, childItem3);
 
-        // Set the root item for the TreeView
         treeView.setRoot(rootItem);
         treeItems.add(entries);
         treeItems.add(dataType);
-        // Add an event handler for selecting tree items
+
+
         treeView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> handleTreeViewItemSelected(newValue)
         );
@@ -92,7 +90,6 @@ public class FXMLController {
                         importItem.setOnAction(event -> JVecDB.importDataBase(item.getPath()));
                         contextMenu.getItems().addAll(importItem);
                     }
-
                     setContextMenu(contextMenu);
                 }
             }
@@ -187,5 +184,10 @@ public class FXMLController {
 
         return decimalFormat.format(sizeInBytes / Math.pow(1024, digitGroups))
                 + " " + ("KMGTPE").charAt(digitGroups - 1) + "B";
+    }
+
+    public void updateFileBrowser() {
+        TreeItem<File> rootNode = buildFileTree(new File("."));
+        folderBrowser.setRoot(rootNode);
     }
 }

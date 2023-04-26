@@ -63,7 +63,7 @@ public final class VectorSpace {
     }
 
     public void clearVectorSpace() {
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             shapes.clear();
             root.getChildren().clear();
         });
@@ -98,9 +98,9 @@ public final class VectorSpace {
 
     public Shape3D getShapeFromVector(JVec vec) {
         Shape3D shape = null;
-        switch (JVecDB.ACTIVE_DATA_TYPE) {
+        switch (JVecDB.getActiveDataType()) {
             case STRING -> {
-                switch (JVecDB.ACTIVE_SHAPE) {
+                switch (JVecDB.getActiveShape()) {
                     case BOX -> shape = getShapeStringBOX(vec);
                     case SPHERE -> {
                     }
@@ -112,11 +112,11 @@ public final class VectorSpace {
     }
 
     private VecBox getShapeStringBOX(JVec vec) {
-        JVec_STR vec_str = (JVec_STR) vec;
-        double radius = vec_str.getWorldLength() * VectorSpaceFX.getScaleFactor();
+        JVec_STR vecSTR = (JVec_STR) vec;
+        double distanceFromOrigin = vecSTR.getWorldLength() * VectorSpaceFX.getScaleFactor();
         double maxLetterValue = 150;
 
-        glm_vec3 position = MathJVec.mapLetterValueToSphereSurface(vec_str.getLetterSum(), maxLetterValue, radius);
+        glm_vec3 position = MathJVec.mapLetterValueToSphereSurface(vecSTR.getLetterSum(), maxLetterValue, distanceFromOrigin);
         return new VecBox(new glm_vec3(5, 5, 5), position, Color.BLUE);
     }
 
@@ -168,26 +168,26 @@ public final class VectorSpace {
 
                 camera.getTransforms().setAll(new Rotate(newRotateX, right), new Rotate(-newRotateY, up));
             } else if (event.getButton() == MouseButton.SECONDARY) {
-                {
-                    double dx = lastX - event.getSceneX();
-                    double dy = lastY - event.getSceneY();
 
-                    azimuth += dx * 0.01;
-                    elevation += dy * 0.01;
+                double dx = lastX - event.getSceneX();
+                double dy = lastY - event.getSceneY();
+
+                azimuth += dx * 0.01;
+                elevation += dy * 0.01;
 
 
-                    double centerX = 0;
-                    double centerY = 0;
-                    double centerZ = 0;
+                double centerX = 0;
+                double centerY = 0;
+                double centerZ = 0;
 
-                    double x = centerX + radius * Math.cos(elevation) * Math.sin(azimuth);
-                    double y = centerY + radius * Math.sin(elevation);
-                    double z = centerZ + radius * Math.cos(elevation) * Math.cos(azimuth);
+                double x = centerX + radius * Math.cos(elevation) * Math.sin(azimuth);
+                double y = centerY + radius * Math.sin(elevation);
+                double z = centerZ + radius * Math.cos(elevation) * Math.cos(azimuth);
 
-                    camera.setTranslateX(x);
-                    camera.setTranslateY(y);
-                    camera.setTranslateZ(z);
-                }
+                camera.setTranslateX(x);
+                camera.setTranslateY(y);
+                camera.setTranslateZ(z);
+
 
                 double cameraX = camera.getTranslateX();
                 double cameraY = camera.getTranslateY();

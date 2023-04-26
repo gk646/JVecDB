@@ -21,11 +21,9 @@ import jvecdb.utils.enums.ExportType;
 import jvecdb.utils.errorhandling.Alerts;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 
-import java.util.ArrayList;
-
 public class DataBase {
-  public   static final int VECTOR_LENGTH_STRING = 2;
-    public  static final int META_DATA_LENGTH = 16;
+    public static final int VECTOR_LENGTH_STRING = 2;
+    public static final int META_DATA_LENGTH = 16;
     VectorDB vectorDB;
     DataBaseImport dbImport = new DataBaseImport();
     DataBaseExport dbExport = new DataBaseExport();
@@ -37,7 +35,6 @@ public class DataBase {
     }
 
 
-
     public void makeExportFolder() {
         if (!dbExport.testForExportFolders()) {
             throw new StartupFailure("Couldn't create export folders!");
@@ -46,10 +43,14 @@ public class DataBase {
 
     public <T extends JVec> void exportDataBase(std_vector<T> dataBase, String fileName, ExportType exportType) {
         String saveMessage = "ERROR: Couldn't export database to file";
-        switch (JVecDB.ACTIVE_DATA_TYPE) {
+        switch (JVecDB.getActiveDataType()) {
             case STRING -> saveMessage = dbExport.exportMixedFormat((std_vector<JVec_STR>) dataBase, fileName, exportType);
-            case IMAGE -> {}
-            case SOUND -> {}
+            case IMAGE -> {
+                //EMPTY
+            }
+            case SOUND -> {
+                //EMPTYx
+            }
         }
         triggerAlerts(saveMessage);
     }
@@ -59,7 +60,7 @@ public class DataBase {
             isValidImportPath(fileName);
             return dbImport.importMixedFormat(fileName, VECTOR_LENGTH_STRING);
         }
-        return null;
+        return new std_vector<>();
     }
 
     private void isValidImportPath(String fileName) {
