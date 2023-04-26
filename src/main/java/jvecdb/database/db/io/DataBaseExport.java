@@ -3,7 +3,7 @@ package jvecdb.database.db.io;
 import javafx.geometry.Point3D;
 import jvecdb.JVecDB;
 import jvecdb.database.db.DataBase;
-import jvecdb.utils.datastructures.datavectors.JVec_STR;
+import jvecdb.utils.datastructures.datavectors.JVecSTR;
 import jvecdb.utils.datastructures.std_vector;
 import jvecdb.utils.enums.ExportType;
 
@@ -30,14 +30,14 @@ public final class DataBaseExport {
         metaData = new HashMap<>();
     }
 
-    public String exportToXML(ArrayList<JVec_STR> data, String fileName) {
+    public String exportToXML(ArrayList<JVecSTR> data, String fileName) {
         if (!testForExportFolders()) {
             return "ERROR: No export folder found!";
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(DataBase.EXPORT_FOLDER + File.separator + fileName + ".xml"))) {
             writer.write("<database>\n");
 
-            for (JVec_STR vec_str : data) {
+            for (JVecSTR vec_str : data) {
                 writer.write("  <entry>\n");
                 writer.write("    <word>" + vec_str.getStringValue() + "</word>\n");
                 writer.write("    <vector>\n");
@@ -71,7 +71,7 @@ public final class DataBaseExport {
         return isExportFolder;
     }
 
-    public String exportMixedFormat(std_vector<JVec_STR> data, String fileName, ExportType exportType) {
+    public String exportMixedFormat(std_vector<JVecSTR> data, String fileName, ExportType exportType) {
         long time;
         if (JVecDB.DEBUG) {
             time = System.nanoTime();
@@ -91,7 +91,7 @@ public final class DataBaseExport {
             writer.write("}\n");
             writer.flush();
             DataOutputStream dos = new DataOutputStream(fos);
-            for (JVec_STR vec_str : data) {
+            for (JVecSTR vec_str : data) {
                 byte[] wordBytes = vec_str.getByteValue();
                 dos.writeByte((byte)wordBytes.length);
                 dos.write(wordBytes);

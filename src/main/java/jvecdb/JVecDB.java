@@ -12,6 +12,9 @@ package jvecdb;
 
 import javafx.stage.Stage;
 import jvecdb.database.VectorDB;
+import jvecdb.events.EventHandler;
+import jvecdb.events.JVecEvent;
+import jvecdb.events.EventListener;
 import jvecdb.rendering.VectorSpaceFX;
 import jvecdb.utils.datastructures.datavectors.JVec;
 import jvecdb.utils.enums.DataType;
@@ -24,7 +27,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-public final class JVecDB {
+public final class JVecDB extends EventHandler {
 
     public static final Charset CHARSET = StandardCharsets.UTF_8;
     public static final String VERSION = "1.0";
@@ -35,7 +38,9 @@ public final class JVecDB {
     private static DataType ACTIVE_DATA_TYPE = DataType.STRING;
     private static VectorShape ACTIVE_SHAPE = VectorShape.BOX;
 
-    private JVecDB() {}
+    private JVecDB() {
+        setOnIOEvent(event-> System.out.println("hey"));
+    }
 
     public static void init(Stage stage) {
         try {
@@ -67,7 +72,6 @@ public final class JVecDB {
         }
     }
 
-
     public static void exportDataBase(String fileName, ExportType exportType) {
         vectorDB.exportDataBase(fileName, exportType);
     }
@@ -84,6 +88,8 @@ public final class JVecDB {
         vectorDB.importVectorDataFromFile(fileName);
         vectorSpaceFX.reloadVectorSpaceFX();
     }
+
+
 
 
 }

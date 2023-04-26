@@ -2,19 +2,17 @@ package jvecdb.events;
 
 public class JVecEvent {
 
-    public enum Type {
-        IMPORT_DATA, IMPORT_DB, EXPORT_DB
-    }
 
-    private final Type type;
+    protected final EventType type;
 
 
-    public JVecEvent(Type type) {
+    public JVecEvent(EventType type) {
         this.type = type;
     }
 
 
-    public Type getType() {
+    public EventType getType() {
         return type;
     }
+
 }

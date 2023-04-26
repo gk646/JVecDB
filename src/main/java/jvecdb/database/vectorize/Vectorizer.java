@@ -9,7 +9,7 @@
  */
 package jvecdb.database.vectorize;
 
-import jvecdb.utils.datastructures.datavectors.JVec_STR;
+import jvecdb.utils.datastructures.datavectors.JVecSTR;
 
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ public final class Vectorizer {
         //SentenceIterator iter = new BasicLineIterator(filePath);
     }
 
-    public JVec_STR StringSimple(String s) {
+    public JVecSTR StringSimple(String s) {
         float letterVal = 0;
         int len = s.length();
         for (var letter : s.toCharArray()) {
@@ -42,6 +42,6 @@ public final class Vectorizer {
                 break;
             }
         }
-        return new JVec_STR(s, new float[]{len, letterVal});
+        return new JVecSTR(s, new float[]{len, letterVal});
     }
 }

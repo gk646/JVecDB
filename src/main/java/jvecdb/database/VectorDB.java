@@ -14,7 +14,7 @@ import jvecdb.JVecDB;
 import jvecdb.database.db.DataBase;
 import jvecdb.database.vectorize.Vectorizer;
 import jvecdb.utils.datastructures.datavectors.JVec;
-import jvecdb.utils.datastructures.datavectors.JVec_STR;
+import jvecdb.utils.datastructures.datavectors.JVecSTR;
 import jvecdb.utils.datastructures.std_vector;
 import jvecdb.utils.enums.ExportType;
 import jvecdb.utils.errorhandling.Alerts;
@@ -40,7 +40,7 @@ public final class VectorDB<T extends JVec> {
     }
 
     public JVec addStringToDB(String inputString) {
-        JVec_STR vec = vectorizer.StringSimple(inputString);
+        JVecSTR vec = vectorizer.StringSimple(inputString);
         jVecDataBase.add((T) vec);
         return vec;
     }

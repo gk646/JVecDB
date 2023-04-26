@@ -2,17 +2,17 @@ package jvecdb.utils.datastructures.datavectors;
 
 import jvecdb.JVecDB;
 
-public final class JVec_STR extends JVec {
+public final class JVecSTR extends JVec {
 
     private final byte[] byteString;
 
 
-    public JVec_STR(String s, float[] vec) {
+    public JVecSTR(String s, float[] vec) {
         super(vec);
         byteString = s.getBytes(JVecDB.CHARSET);
     }
 
-    public JVec_STR(byte[] wordBytes, float[] vec) {
+    public JVecSTR(byte[] wordBytes, float[] vec) {
         super(vec);
         byteString = wordBytes;
     }
@@ -52,6 +52,6 @@ public final class JVec_STR extends JVec {
     }
 
     public static JVec ZERO() {
-        return new JVec_STR("", new float[0]);
+        return new JVecSTR("", new float[0]);
     }
 }

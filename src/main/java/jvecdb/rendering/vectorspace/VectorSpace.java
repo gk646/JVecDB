@@ -18,7 +18,7 @@ import jvecdb.rendering.VectorSpaceFX;
 import jvecdb.rendering.vectorspace.vectorshapes.VecBox;
 import jvecdb.utils.MathJVec;
 import jvecdb.utils.datastructures.datavectors.JVec;
-import jvecdb.utils.datastructures.datavectors.JVec_STR;
+import jvecdb.utils.datastructures.datavectors.JVecSTR;
 import jvecdb.utils.datastructures.glm_vec3;
 import jvecdb.utils.errorhandling.Alerts;
 
@@ -112,7 +112,7 @@ public final class VectorSpace {
     }
 
     private VecBox getShapeStringBOX(JVec vec) {
-        JVec_STR vecSTR = (JVec_STR) vec;
+        JVecSTR vecSTR = (JVecSTR) vec;
         double distanceFromOrigin = vecSTR.getWorldLength() * VectorSpaceFX.getScaleFactor();
         double maxLetterValue = 150;
 
@@ -121,7 +121,7 @@ public final class VectorSpace {
     }
 
     private void initOrigin() {
-        VecBox box = new VecBox(new glm_vec3(5, 5, 5), new glm_vec3(0, 0, 0), Color.RED, JVec_STR.ZERO());
+        VecBox box = new VecBox(new glm_vec3(5, 5, 5), new glm_vec3(0, 0, 0), Color.RED, JVecSTR.ZERO());
         root.getChildren().add(box);
         shapes.add(box);
     }

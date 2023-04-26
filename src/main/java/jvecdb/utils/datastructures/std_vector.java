@@ -28,10 +28,6 @@ public final class std_vector<T> extends AbstractList<T> implements RandomAccess
         this(10);
     }
 
-    private std_vector(int from, int to) {
-
-    }
-
     public boolean add(T obj) {
         if (size == elements.length) {
             T[] newElements = (T[]) new Object[elements.length * 3];
