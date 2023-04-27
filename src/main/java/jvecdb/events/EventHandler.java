@@ -1,18 +1,28 @@
 package jvecdb.events;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.Map;
 
-public class EventHandler {
-    Map<EventType, EventListener> eventListenerMap = new HashMap<>();
+public abstract class EventHandler implements JEventPublisher {
 
-    protected void setOnIOEvent(EventListener eventListener) {
-        eventListenerMap.put(EventType.EXPORT_DB, eventListener);
-        eventListenerMap.put(EventType.IMPORT_DATA, eventListener);
-        eventListenerMap.put(EventType.IMPORT_DB, eventListener);
+    public static final Map<EventType, ArrayList<JEventListener<? extends JVecEvent>>> eventListenerMap = new EnumMap<>(EventType.class);
+
+
+    protected static void setOnImportDB(JEventListener<JVecIOEvent> listener) {
+        addEntryToList(EventType.IMPORT_DB, listener);
     }
 
-    protected void setOnImportEven(EventListener eventListener) {
+    protected static void setOnExportDB(JEventListener<JVecIOEvent> listener) {
+        addEntryToList(EventType.EXPORT_DB, listener);
+    }
 
+    private static void addEntryToList(EventType type, JEventListener<? extends JVecEvent> listener) {
+        if (eventListenerMap.get(type) == null) {
+            eventListenerMap.put(type, new ArrayList<>(Collections.singletonList(listener)));
+        } else {
+            eventListenerMap.get(type).add(listener);
+        }
     }
 }

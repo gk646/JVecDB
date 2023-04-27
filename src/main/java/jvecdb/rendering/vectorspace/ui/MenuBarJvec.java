@@ -5,12 +5,20 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import jvecdb.JVecDB;
+import jvecdb.events.EventType;
+import jvecdb.events.JEventPublisher;
+import jvecdb.events.JVecIOEvent;
 import jvecdb.utils.enums.ExportType;
+import jvecdb.utils.errorhandling.Alerts;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class MenuBarJvec extends MenuBar {
+public class MenuBarJvec extends MenuBar implements JEventPublisher {
 
 
     public MenuBarJvec() {
@@ -70,7 +78,7 @@ public class MenuBarJvec extends MenuBar {
             Optional<String> result = inputDialog.showAndWait();
 
 
-            result.ifPresent(filename -> JVecDB.exportDataBase(filename, ExportType.BINARY));
+            result.ifPresent(filename -> fireEventDefault(new JVecIOEvent(EventType.EXPORT_DB, filename, ExportType.BINARY)));
         });
 
 
@@ -85,7 +93,7 @@ public class MenuBarJvec extends MenuBar {
             Optional<String> result = inputDialog.showAndWait();
 
 
-            result.ifPresent(filename -> JVecDB.importDataBase(filename + ".jvecdb"));
+            result.ifPresent(filename -> fireEventDefault(new JVecIOEvent(EventType.IMPORT_DB, filename + ".jvecdb")));
         });
 
         MenuItem importWordsFromFile = new MenuItem("Import words from file");
@@ -98,7 +106,7 @@ public class MenuBarJvec extends MenuBar {
 
             Optional<String> result = inputDialog.showAndWait();
 
-            result.ifPresent(JVecDB::importWordsFromFile);
+            result.ifPresent(fileName -> fireEventDefault(new JVecIOEvent(EventType.IMPORT_DATA, fileName)));
         });
 
         menu.getItems().addAll(aboutItem, exportDataBase, importDataBase, importWordsFromFile);
@@ -108,13 +116,22 @@ public class MenuBarJvec extends MenuBar {
 
     private Menu createAboutMenu() {
         Menu helpMenu = new Menu("About");
-        MenuItem aboutItem = new MenuItem("GitHub");
-        aboutItem.setOnAction(e -> System.out.println("About"));
+        MenuItem aboutItem = new MenuItem("Open GitHub page");
+        aboutItem.setOnAction(e -> {
+            String url = "https://github.com/gk646/JVecDB";
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                try {
+                    Desktop.getDesktop().browse(new URI(url));
+                } catch (IOException | URISyntaxException a) {
+                    a.printStackTrace();
+                    Alerts.displayErrorMessage("Couldn't open WebPage");
+                }
+            } else {
+              Alerts.displayErrorMessage("Opening a web page is not supported on this platform.");
+            }
+        });
         helpMenu.getItems().add(aboutItem);
 
-        aboutItem.setOnAction(event -> {
-
-        });
         return helpMenu;
     }
 }

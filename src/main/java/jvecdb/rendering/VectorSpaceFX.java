@@ -35,7 +35,7 @@ import java.util.Collections;
 public class VectorSpaceFX {
 
     VectorSpace vectorSpace;
-    private Stage stage;
+
     private final MenuBarJvec menuBarJvec = new MenuBarJvec();
 
     static int scaleFactor = 5;
@@ -45,14 +45,13 @@ public class VectorSpaceFX {
     }
 
     private boolean initStage(Stage stage) {
-        this.stage = stage;
         stage.setOnCloseRequest(windowEvent -> System.exit(1));
         BorderPane root;
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/main.fxml"));
         try {
             root = fxmlLoader.load();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new StartupFailure(e);
         }
 
         FXMLController myController = fxmlLoader.getController();
@@ -65,11 +64,8 @@ public class VectorSpaceFX {
         myController.stackPaneCenter.getChildren().add(subScene);
         root.setCenter(myController.stackPaneCenter);
         Scene sceneWithMenu = new Scene(root, JVecDB.WIDTH, JVecDB.HEIGHT);
-        this.stage.setScene(sceneWithMenu);
-        this.stage.setTitle("JVecDB");
-
-
-        root.setOnMouseMoved(event -> myController.updateFileBrowser());
+        stage.setScene(sceneWithMenu);
+        stage.setTitle("JVecDB");
 
         stage.show();
         subScene.requestFocus();
@@ -114,7 +110,6 @@ public class VectorSpaceFX {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
         updateInformationTreeView();
     }
 

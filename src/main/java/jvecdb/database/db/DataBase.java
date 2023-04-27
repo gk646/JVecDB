@@ -24,13 +24,12 @@ import jvecdb.utils.errorhandling.exceptions.StartupFailure;
 public class DataBase {
     public static final int VECTOR_LENGTH_STRING = 2;
     public static final int META_DATA_LENGTH = 16;
-    VectorDB vectorDB;
+    public static final String EXPORT_FOLDER = "JVecDB_Exports";
+    VectorDB<? extends JVec> vectorDB;
     DataBaseImport dbImport = new DataBaseImport();
     DataBaseExport dbExport = new DataBaseExport();
 
-    public static String EXPORT_FOLDER = "JVecDB_Exports";
-
-    public DataBase(VectorDB vectorDB) {
+    public DataBase(VectorDB<? extends JVec> vectorDB) {
         this.vectorDB = vectorDB;
     }
 
@@ -55,10 +54,10 @@ public class DataBase {
         triggerAlerts(saveMessage);
     }
 
-    public std_vector<? extends JVec> importDataBase(String fileName) {
+    public <T extends JVec> std_vector<T> importDataBase(String fileName) {
         if (fileName.contains(".jvecdb")) {
             isValidImportPath(fileName);
-            return dbImport.importMixedFormat(fileName, VECTOR_LENGTH_STRING);
+            return (std_vector<T>) dbImport.importMixedFormat(fileName, VECTOR_LENGTH_STRING);
         }
         return new std_vector<>();
     }

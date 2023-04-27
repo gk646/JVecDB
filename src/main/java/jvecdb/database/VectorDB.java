@@ -22,11 +22,9 @@ import jvecdb.utils.errorhandling.Alerts;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public final class VectorDB<T extends JVec> {
-    public static boolean IMPORTED_FLAG = false;
     DataBase dataBase;
     Vectorizer vectorizer;
     std_vector<T> jVecDataBase = new std_vector<>();
@@ -46,20 +44,19 @@ public final class VectorDB<T extends JVec> {
     }
 
 
+
     public void exportDataBase(String fileName, ExportType exportType) {
         new Thread(() -> dataBase.exportDataBase(jVecDataBase, fileName, exportType)).start();
     }
 
     public void importDataBase(String fileName) {
-        jVecDataBase = (std_vector<T>) dataBase.importDataBase(fileName);
+        jVecDataBase = dataBase.importDataBase(fileName);
     }
 
 
     public void importVectorDataFromFile(String fileName) {
         jVecDataBase.clear();
-        try {
-            InputStream is = new FileInputStream(fileName);
-            BufferedReader br = new BufferedReader(new InputStreamReader(is, JVecDB.CHARSET));
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), JVecDB.CHARSET))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] words = line.trim().split("\\s+");

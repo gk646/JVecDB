@@ -45,8 +45,8 @@ public final class JVecSTR extends JVec {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < vector.length; i++) {
-            sb.append(vector[i]).append(", ");
+        for (final float v : vector) {
+            sb.append(v).append(", ");
         }
         return sb.append(getStringValue()).append("]").toString();
     }

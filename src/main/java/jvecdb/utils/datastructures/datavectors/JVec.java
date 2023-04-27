@@ -2,10 +2,10 @@ package jvecdb.utils.datastructures.datavectors;
 
 import java.util.Arrays;
 
-abstract public class JVec {
+public abstract class JVec {
     protected final float[] vector;
 
-    public JVec(float[] vec) {
+    protected JVec(float[] vec) {
         this.vector = vec;
     }
 
@@ -18,9 +18,6 @@ abstract public class JVec {
         return vector.length;
     }
 
-    public float getIndex(int index) {
-        return vector[index];
-    }
 
     @Override
     public boolean equals(Object o) {

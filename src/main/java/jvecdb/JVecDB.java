@@ -13,12 +13,9 @@ package jvecdb;
 import javafx.stage.Stage;
 import jvecdb.database.VectorDB;
 import jvecdb.events.EventHandler;
-import jvecdb.events.JVecEvent;
-import jvecdb.events.EventListener;
 import jvecdb.rendering.VectorSpaceFX;
 import jvecdb.utils.datastructures.datavectors.JVec;
 import jvecdb.utils.enums.DataType;
-import jvecdb.utils.enums.ExportType;
 import jvecdb.utils.enums.VectorShape;
 import jvecdb.utils.errorhandling.Alerts;
 import jvecdb.utils.errorhandling.exceptions.StartupFailure;
@@ -30,20 +27,21 @@ import java.nio.charset.StandardCharsets;
 public final class JVecDB extends EventHandler {
 
     public static final Charset CHARSET = StandardCharsets.UTF_8;
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.1";
     public static final boolean DEBUG = true;
     public static final int WIDTH = 1280, HEIGHT = 960, MAX_DISPLAYED_VECTORS = 25_000;
     public static final VectorSpaceFX vectorSpaceFX = new VectorSpaceFX();
-    public static final VectorDB<? extends JVec> vectorDB = new VectorDB<>();
-    private static DataType ACTIVE_DATA_TYPE = DataType.STRING;
-    private static VectorShape ACTIVE_SHAPE = VectorShape.BOX;
+    public static final VectorDB vectorDB = new VectorDB();
+    private static DataType activeDataType = DataType.STRING;
+    private static VectorShape activeShape = VectorShape.BOX;
 
     private JVecDB() {
-        setOnIOEvent(event-> System.out.println("hey"));
+
     }
 
     public static void init(Stage stage) {
         try {
+            setupListeners();
             if (!vectorSpaceFX.init(stage)) {
                 throw new StartupFailure("Failed to startup!");
             }
@@ -54,15 +52,33 @@ public final class JVecDB extends EventHandler {
             throw new StartupFailure(e.toString());
         }
     }
+
+    private static void setupListeners() {
+        setOnImportDB(event ->
+                new Thread(() -> {
+                    vectorDB.importDataBase(event.getEventString());
+                    vectorSpaceFX.reloadVectorSpaceFX();
+                }).start());
+
+        setOnExportDB(event -> vectorDB.exportDataBase(event.getEventString(), event.getExportType()));
+    }
+
     public static DataType getActiveDataType() {
-        return ACTIVE_DATA_TYPE;
+        return activeDataType;
     }
 
     public static VectorShape getActiveShape() {
-        return ACTIVE_SHAPE;
+        return activeShape;
     }
+
+    public static void importWordsFromFile(String fileName) {
+        vectorDB.importVectorDataFromFile(fileName);
+        vectorSpaceFX.reloadVectorSpaceFX();
+    }
+
+
     public static <T> void addDBEntry(T entry) {
-        switch (ACTIVE_DATA_TYPE) {
+        switch (activeDataType) {
             case STRING -> {
                 if (!vectorSpaceFX.addVisualEntry(vectorDB.addStringToDB((String) entry))) {
                     Alerts.displayErrorMessage("Can't add entry to database!");
@@ -71,25 +87,4 @@ public final class JVecDB extends EventHandler {
             case NULL -> Alerts.displayErrorMessage("No datatype for database selected!");
         }
     }
-
-    public static void exportDataBase(String fileName, ExportType exportType) {
-        vectorDB.exportDataBase(fileName, exportType);
-    }
-
-    public static void importDataBase(String fileName) {
-        new Thread(() -> {
-            vectorDB.importDataBase(fileName);
-            vectorSpaceFX.reloadVectorSpaceFX();
-        }).start();
-    }
-
-
-    public static void importWordsFromFile(String fileName) {
-        vectorDB.importVectorDataFromFile(fileName);
-        vectorSpaceFX.reloadVectorSpaceFX();
-    }
-
-
-
-
 }

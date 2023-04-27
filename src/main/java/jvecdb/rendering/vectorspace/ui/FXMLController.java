@@ -1,6 +1,10 @@
 package jvecdb.rendering.vectorspace.ui;
 
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.ButtonType;
@@ -15,15 +19,22 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 import jvecdb.JVecDB;
+import jvecdb.events.EventType;
+import jvecdb.events.JEventPublisher;
+import jvecdb.events.JVecIOEvent;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
-public class FXMLController {
-    private boolean folderBrowserUpdated;
+public class FXMLController implements JEventPublisher {
     public static List<TreeItem<String>> treeItems = new ArrayList<>();
     @FXML
     public TreeView<String> treeView;
@@ -87,7 +98,7 @@ public class FXMLController {
                         contextMenu.getItems().add(importItem);
                     } else if (item.getName().contains(".jvecdb")) {
                         MenuItem importItem = new MenuItem("Import database");
-                        importItem.setOnAction(event -> JVecDB.importDataBase(item.getPath()));
+                        importItem.setOnAction(event -> fireEventDefault(new JVecIOEvent(EventType.IMPORT_DB, item.getPath())));
                         contextMenu.getItems().addAll(importItem);
                     }
                     setContextMenu(contextMenu);
@@ -98,6 +109,8 @@ public class FXMLController {
         TreeItem<File> rootNode = buildFileTree(rootFolder);
         folderBrowser.setRoot(rootNode);
         folderBrowser.setShowRoot(false);
+
+        startFileBrowserUpdateThread();
     }
 
 
@@ -148,17 +161,11 @@ public class FXMLController {
         if (file.isDirectory()) {
             icon.setImage(new Image("/icons/folder.png"));
         } else {
-            // Customize the file icon based on the file type
             String fileType = file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase();
             switch (fileType) {
-                case "txt":
-                    icon.setImage(new Image("/icons/jvecdb.png"));
-                case "jvecdb":
-                    icon.setImage(new Image("/icons/jvecdb.png"));
-                    break;
-                // Add more cases for other file types
-                default:
-                    icon.setImage(new Image("/icons/jvecdb.png"));
+                case "txt" -> icon.setImage(new Image("/icons/text.png"));
+                case "jvecdb" -> icon.setImage(new Image("/icons/jvecdb.png"));
+                default -> icon.setImage(new Image("/icons/file.png"));
             }
         }
 
@@ -186,8 +193,42 @@ public class FXMLController {
                 + " " + ("KMGTPE").charAt(digitGroups - 1) + "B";
     }
 
-    public void updateFileBrowser() {
-        TreeItem<File> rootNode = buildFileTree(new File("."));
-        folderBrowser.setRoot(rootNode);
+    public void startFileBrowserUpdateThread() {
+        KeyFrame keyFrame = new KeyFrame(Duration.millis(1500), event -> {
+            //
+        });
+        Timeline timeline = new Timeline(keyFrame);
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+
+        new Thread(() -> {
+            long size = 0;
+            while (true) {
+                if (size != getDirectorySize()) {
+                    Platform.runLater(() -> {
+                        TreeItem<File> rootNode = buildFileTree(new File("."));
+                        folderBrowser.setRoot(rootNode);
+                    });
+                    size = getDirectorySize();
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }).start();
+    }
+
+
+    private long getDirectorySize() {
+        try (Stream<Path> stream = Files.walk(Path.of("."))) {
+            return stream
+                    .filter(path -> path.toFile().isFile())
+                    .mapToLong(path -> path.toFile().length())
+                    .sum();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
