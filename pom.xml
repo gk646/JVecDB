@@ -72,7 +72,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>Launcher</mainClass>
+                    <mainClass>gk646.Launcher</mainClass>
                 </configuration>
             </plugin>
             <plugin>
@@ -85,7 +85,7 @@
                     </descriptors>
                     <archive>
                         <manifest>
-                            <mainClass>LaunchWrapper</mainClass>
+                            <mainClass>gk646.LaunchWrapper</mainClass>
                         </manifest>
                     </archive>
                     <finalName>${project.artifactId}</finalName>

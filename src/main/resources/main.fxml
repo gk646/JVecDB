@@ -30,7 +30,7 @@
   ~ SOFTWARE.
   -->
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="960.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jvecdb.rendering.vectorspace.ui.FXMLController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="960.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gk646.jvecdb.rendering.vectorspace.ui.FXMLController">
    <center>
       <StackPane id="stackPaneCenter" fx:id="stackPaneCenter" prefHeight="960.0" prefWidth="1007.0" BorderPane.alignment="CENTER">
          <children>
